@@ -22,7 +22,7 @@ import UserBookings from "./components/dashboard/Bookings"
 import UserPayments from "./components/dashboard/Payments"
 import UserTickets from "./components/dashboard/Tickets"
 import Analytics from "./components/adminDashboard/Analytics"
-import PaymentPage from "./pages/Payment"
+
 import PaymentSuccessPage from "./pages/PaymentSuccess"
 import { Bookings } from "./pages/Bookings"
 import { VDetails } from "./pages/VDetails"
@@ -30,6 +30,7 @@ import { AllVehicles } from "./components/adminDashboard/AllVehicles"
 import { AllPayments } from "./components/adminDashboard/AllPayments"
 import ImageUploadPage from "./pages/ImageUploadPage"
 import TestImageUpload from "./pages/TestImageUpload"
+import  PaymentsPage  from "./pages/Payment"
 
 function App() {
   const router = createBrowserRouter([
@@ -71,7 +72,7 @@ function App() {
 
     {
       path: 'payment/:bookingId',
-      element: <PaymentPage />,
+      element: <PaymentsPage />,
       errorElement: <Error />,
     },
     {
