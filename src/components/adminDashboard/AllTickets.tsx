@@ -1,13 +1,12 @@
-// src/components/AllTickets.tsx
-
 import { AiFillDelete } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiFilter } from "react-icons/fi";
 import type { RootState } from "../../apps/store";
 import { useSelector } from "react-redux";
 import { PuffLoader } from "react-spinners";
 import Swal from "sweetalert2";
 import { ticketsApi } from "../../features/api/ticketsApi";
 import type { TicketDetails } from "../../types/ticketDetails";
+import { useState } from "react";
 
 // Helper function to get badge class based on ticket status
 const getTicketStatusBadge = (status: TicketDetails["status"]) => {
@@ -25,6 +24,7 @@ const getTicketStatusBadge = (status: TicketDetails["status"]) => {
 
 export const AllTickets = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [statusFilter, setStatusFilter] = useState<string>("All");
 
   const {
     data: ticketsData = [],
@@ -33,6 +33,12 @@ export const AllTickets = () => {
   } = ticketsApi.useGetAllTicketsQuery(undefined, { skip: !isAuthenticated });
   const [updateTicket] = ticketsApi.useUpdateTicketMutation();
   const [deleteTicket] = ticketsApi.useDeleteTicketMutation();
+
+  // Filter tickets based on status
+  const filteredTickets = ticketsData.filter((ticket: TicketDetails) => {
+    if (statusFilter === "All") return true;
+    return ticket.status === statusFilter;
+  });
 
   const handleUpdateTicketStatus = async (
     ticketId: number,
@@ -91,9 +97,26 @@ export const AllTickets = () => {
 
   return (
     <>
-      <div className="text-2xl font-bold text-center mb-4 text-purple-900">
-        All Tickets
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-2xl font-bold text-purple-900">All Tickets</div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <FiFilter className="text-purple-600" />
+            <span className="text-gray-700 font-medium">Filter by Status:</span>
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="select select-bordered w-full max-w-xs"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="Pending">Pending</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
       </div>
+
       <div className="overflow-x-auto bg-gray-100 p-6 rounded-lg shadow-md">
         <table className="table w-full text-left">
           <thead>
@@ -103,7 +126,7 @@ export const AllTickets = () => {
               <th className="p-4 text-purple-600">Description</th>
               <th className="p-4 text-purple-600">Status</th>
               <th className="p-4 text-purple-600">Created By</th>
-              <th className="p-4 text-purple-600">Created At</th> text-black
+              <th className="p-4 text-purple-600">Created At</th>
               <th className="p-4 text-purple-600">Last Updated</th>
               <th className="p-4 text-purple-600">Actions</th>
             </tr>
@@ -122,14 +145,14 @@ export const AllTickets = () => {
                   <span className="ml-4 text-gray-700">Loading tickets...</span>
                 </td>
               </tr>
-            ) : ticketsData.length === 0 ? (
+            ) : filteredTickets.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center text-gray-600 py-8 text-lg">
-                  No tickets available 😎
+                  No {statusFilter === "All" ? "" : statusFilter} tickets available
                 </td>
               </tr>
             ) : (
-              ticketsData.map((ticket: TicketDetails) => (
+              filteredTickets.map((ticket: TicketDetails) => (
                 <tr
                   key={ticket.ticketId}
                   className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"

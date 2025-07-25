@@ -1,4 +1,4 @@
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlus, FiFilter } from "react-icons/fi";
 import { userApi } from "../../features/api/userApi";
 import type { RootState } from "../../apps/store";
 import { useSelector } from "react-redux";
@@ -49,6 +49,7 @@ export const AllUsers = () => {
     role: "user",
     profileUrl: "",
   });
+  const [roleFilter, setRoleFilter] = useState<string>("All");
 
   const { token } = useSelector((state: RootState) => state.auth);
 
@@ -58,6 +59,12 @@ export const AllUsers = () => {
 
   const { data: usersData = [], isLoading: userDataIsLoading, error: fetchError, refetch } = 
     userApi.useGetAllUsersProfilesQuery(undefined, { skip: !token });
+
+  // Filter users based on role
+  const filteredUsers = usersData.filter((user: UserDetail) => {
+    if (roleFilter === "All") return true;
+    return user.role === roleFilter;
+  });
 
   const handleEditModalToggle = (user?: UserDetail) => {
     setIsEditModalOpen(!isEditModalOpen);
@@ -181,6 +188,29 @@ export const AllUsers = () => {
         </button>
       </div>
 
+      {/* Filter Controls */}
+      <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <FiFilter className="text-purple-600" />
+            <span className="text-gray-700 font-medium">Filter by Role:</span>
+          </div>
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="select select-bordered w-full max-w-xs"
+          >
+            <option value="All">All Roles</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+        <div className="text-sm text-gray-500">
+          Showing {filteredUsers.length} of {usersData.length} users
+        </div>
+      </div>
+
       <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-6">
         {fetchError ? (
           <div className="text-red-600 text-center py-4 text-lg">
@@ -191,9 +221,9 @@ export const AllUsers = () => {
             <PuffLoader color="#8B5CF6" size={60} />
             <span className="ml-4 text-gray-700">Loading users...</span>
           </div>
-        ) : usersData.length === 0 ? (
+        ) : filteredUsers.length === 0 ? (
           <div className="text-center text-gray-600 py-8 text-lg">
-            No users found.
+            No {roleFilter === "All" ? "" : roleFilter} users found.
           </div>
         ) : (
           <table className="table w-full text-left">
@@ -207,7 +237,7 @@ export const AllUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {usersData?.map((user: UserDetail) => (
+              {filteredUsers?.map((user: UserDetail) => (
                 <tr key={user.id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                   <th className="p-4 text-gray-700"> {user.id} </th>
                   <td className="p-4">

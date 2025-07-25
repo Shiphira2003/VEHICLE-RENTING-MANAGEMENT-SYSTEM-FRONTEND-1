@@ -1,5 +1,4 @@
-// src/components/AllBookings.tsx
-
+import { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import type { RootState } from "../../apps/store";
@@ -22,6 +21,7 @@ const getBookingStatusBadge = (status: BookingDetails["bookingStatus"]) => {
 
 export const AllBookings = () => {
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const [filterStatus, setFilterStatus] = useState<string>("All");
 
     const { data: bookingsData = [], isLoading, error } = bookingsApi.useGetAllBookingsQuery(
         undefined,
@@ -29,6 +29,12 @@ export const AllBookings = () => {
     );
     const [updateBooking] = bookingsApi.useUpdateBookingMutation();
     const [deleteBooking] = bookingsApi.useDeleteBookingMutation();
+
+    // Filter bookings based on status
+    const filteredBookings = bookingsData.filter((booking: BookingDetails) => {
+        if (filterStatus === "All") return true;
+        return booking.bookingStatus === filterStatus;
+    });
 
     const handleConfirmBooking = async (bookingId: number) => {
         Swal.fire({
@@ -42,7 +48,10 @@ export const AllBookings = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await updateBooking({ bookingId: bookingId, bookingStatus: "Confirmed" }).unwrap();
+                    const res = await updateBooking({ 
+                        bookingId: bookingId, 
+                        bookingStatus: "Confirmed" 
+                    }).unwrap();
                     console.log(res);
                     Swal.fire("Confirmed!", "Booking has been confirmed.", "success");
                 } catch (error) {
@@ -77,7 +86,27 @@ export const AllBookings = () => {
 
     return (
         <>
-            <div className="text-2xl font-bold text-center mb-4 text-purple-900">All Bookings</div>
+            <div className="flex justify-between items-center mb-6">
+                <div className="text-2xl font-bold text-purple-900">All Bookings</div>
+                <div className="flex items-center gap-4">
+                    <label htmlFor="status-filter" className="text-gray-700 font-medium">
+                        Filter by Status:
+                    </label>
+                    <select
+                        id="status-filter"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="p-2 text-purple-600 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    >
+                        <option value="All">All Bookings</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+
             <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
                 <table className="table w-full text-left">
                     <thead>
@@ -106,14 +135,14 @@ export const AllBookings = () => {
                                     <span className="ml-4 text-gray-700">Loading bookings...</span>
                                 </td>
                             </tr>
-                        ) : bookingsData.length === 0 ? (
+                        ) : filteredBookings.length === 0 ? (
                             <tr>
                                 <td colSpan={8} className="text-center text-gray-600 py-8 text-lg">
-                                    No bookings available 😎
+                                    No {filterStatus === "All" ? "" : filterStatus} bookings available
                                 </td>
                             </tr>
                         ) : (
-                            bookingsData.map((booking: BookingDetails) => (
+                            filteredBookings.map((booking: BookingDetails) => (
                                 <tr key={booking.bookingId} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                                     <th className="p-4 text-gray-700">{booking.bookingId}</th>
                                     <td className="p-4">
@@ -121,7 +150,6 @@ export const AllBookings = () => {
                                             <div className="avatar">
                                                 <div className="mask mask-squircle h-12 w-12 border-2 border-purple-400">
                                                     <img
-                                                        // FIX: Always use the default placeholder image, as imageUrl is not available
                                                         src={"/default-car.png"}
                                                         alt={`${booking.vehicle.vehicleSpec.manufacturer} ${booking.vehicle.vehicleSpec.model}`}
                                                         className="object-cover"

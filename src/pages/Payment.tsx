@@ -7,7 +7,7 @@ interface Props {
   userId: number | null;
 }
 
-export const PaymentsPage = ({ amount, bookingId, userId }: Props) => {
+export const PaymentPage = ({ amount, bookingId, userId }: Props) => {
   const [createPayment, { isLoading }] = useCreatePaymentMutation();
 
   const handleClick = async () => {
@@ -47,4 +47,4 @@ export const PaymentsPage = ({ amount, bookingId, userId }: Props) => {
     </button>
   );
 };
-export default PaymentsPage
+export default PaymentPage

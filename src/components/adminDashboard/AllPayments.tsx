@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import type { RootState } from "../../apps/store";
@@ -25,6 +26,7 @@ const getPaymentStatusBadge = (status: PaymentDetails["paymentStatus"]) => {
 
 export const AllPayments = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [filterStatus, setFilterStatus] = useState<string>("All");
 
   const {
     data: paymentsData = [],
@@ -33,6 +35,12 @@ export const AllPayments = () => {
   } = paymentsApi.useGetAllPaymentsQuery(undefined, { skip: !isAuthenticated });
   const [updatePayment] = paymentsApi.useUpdatePaymentMutation();
   const [deletePayment] = paymentsApi.useDeletePaymentMutation();
+
+  // Filter payments based on status
+  const filteredPayments = paymentsData.filter((payment: PaymentDetails) => {
+    if (filterStatus === "All") return true;
+    return payment.paymentStatus === filterStatus;
+  });
 
   const handleUpdatePaymentStatus = async (
     paymentId: number,
@@ -84,9 +92,27 @@ export const AllPayments = () => {
 
   return (
     <>
-      <div className="text-2xl font-bold text-center mb-4 text-purple-900">
-        All Payments
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-2xl font-bold text-purple-900">All Payments</div>
+        <div className="flex items-center gap-4">
+          <label htmlFor="status-filter" className="text-gray-700 font-medium">
+            Filter by Status:
+          </label>
+          <select
+            id="status-filter"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="p-2 text-purple-600 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+          >
+            <option value="All">All Payments</option>
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Failed">Failed</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+        </div>
       </div>
+
       <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
         <table className="table w-full text-left">
           <thead>
@@ -117,17 +143,17 @@ export const AllPayments = () => {
                   <span className="ml-4 text-purple-700">Loading payments...</span>
                 </td>
               </tr>
-            ) : paymentsData.length === 0 ? (
+            ) : filteredPayments.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center text-red-600 py-8 text-lg">
-                  No payments available 😎
+                <td colSpan={10} className="text-center text-gray-600 py-8 text-lg">
+                  No {filterStatus === "All" ? "" : filterStatus} payments available
                 </td>
               </tr>
             ) : (
-              paymentsData.map((payment: PaymentDetails) => (
+              filteredPayments.map((payment: PaymentDetails) => (
                 <tr
                   key={payment.paymentId}
-                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray text-purple-50"
+                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
                 >
                   <th className="p-4 text-gray-700">{payment.paymentId}</th>
                   <td className="p-4 text-gray-700 font-bold">

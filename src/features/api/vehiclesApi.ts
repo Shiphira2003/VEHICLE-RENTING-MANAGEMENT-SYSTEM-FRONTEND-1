@@ -1,71 +1,135 @@
-// src/features/api/vehicleApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Vehicle, CreateVehiclePayload, UpdateVehiclePayload } from '../../types/vehicleDetails';
+import type {
+  Vehicle,
+  VehicleSpec,
+  CreateVehiclePayload,
+  UpdateVehiclePayload
+} from '../../types/vehicleDetails';
+
+const BASE_URL = 'http://localhost:8000/api'; // Update with your API base URL
 
 export const vehicleApi = createApi({
-  reducerPath: 'vehicleApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/',
-    prepareHeaders: (headers, { getState }) => {
-     
-      const token = (getState() as any).auth.token; 
+  reducerPath: 'vehiclesApi',
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers) => {
+      // Add authorization header if needed
+      const token = localStorage.getItem('token');
       if (token) {
-        headers.set('authorization', `Bearer ${token}`);
+        headers.set('Authorization', `Bearer ${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ['Vehicle'], 
+  tagTypes: ['Vehicle'],
   endpoints: (builder) => ({
-
+    // Get all vehicles
     getAllVehicles: builder.query<Vehicle[], void>({
-      query: () => 'vehicles', 
+      query: () => '/vehicles',
       providesTags: (result) =>
         result
-          ? [...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })), 'Vehicle']
-          : ['Vehicle'],
+          ? [
+              ...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })),
+              { type: 'Vehicle', id: 'LIST' },
+            ]
+          : [{ type: 'Vehicle', id: 'LIST' }],
     }),
 
+    // Get filtered vehicles
+    getFilteredVehicles: builder.query<Vehicle[], {
+      manufacturer?: string;
+      maxDailyPrice?: number;
+      sort?: 'dailyRateAsc' | 'dailyRateDesc';
+    }>({
+      query: (params) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.manufacturer) {
+          queryParams.append('manufacturer', params.manufacturer);
+        }
+        
+        if (params.maxDailyPrice) {
+          queryParams.append('maxDailyPrice', params.maxDailyPrice.toString());
+        }
+        
+        if (params.sort) {
+          queryParams.append('sort', params.sort);
+        }
+        
+        return {
+          url: `vehicles/filter?${queryParams.toString()}`,
+          method: 'GET'
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })),
+              { type: 'Vehicle', id: 'FILTERED_LIST' },
+            ]
+          : [{ type: 'Vehicle', id: 'FILTERED_LIST' }],
+    }),
+
+    // Get vehicle by ID
     getVehicleById: builder.query<Vehicle, number>({
-      query: (id) => `vehicles/${id}`,
+      query: (id) => `/vehicles/${id}`,
       providesTags: (result, error, id) => [{ type: 'Vehicle', id }],
     }),
 
-    createVehicle: builder.mutation<string, CreateVehiclePayload>({ 
-      query: (newVehicle) => ({
-        url: 'vehicles',
-        method: 'POST', 
-        body: newVehicle,
+    // Create a new vehicle
+    createVehicle: builder.mutation<Vehicle, CreateVehiclePayload>({
+      query: (body) => ({
+        url: '/vehicles',
+        method: 'POST',
+        body,
       }),
-      invalidatesTags: ['Vehicle'], 
+      invalidatesTags: [{ type: 'Vehicle', id: 'LIST' }],
     }),
 
-    updateVehicle: builder.mutation<string, { id: number; data: UpdateVehiclePayload }>({ 
-      query: ({ id, data }) => ({
-        url: `vehicles/${id}`,
-        method: 'PUT', 
-        body: data,
+    // Update a vehicle
+    updateVehicle: builder.mutation<Vehicle, { id: number; body: UpdateVehiclePayload }>({
+      query: ({ id, body }) => ({
+        url: `/vehicles/${id}`,
+        method: 'PUT',
+        body,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Vehicle', id }], 
+      invalidatesTags: (result, error, { id }) => [{ type: 'Vehicle', id }],
     }),
 
-    deleteVehicle: builder.mutation<string, number>({
+    // Delete a vehicle
+    deleteVehicle: builder.mutation<void, number>({
       query: (id) => ({
-        url: `vehicles/${id}`,
-        method: 'DELETE', 
+        url: `/vehicles/${id}`,
+        method: 'DELETE',
       }),
-      invalidatesTags: ['Vehicle'], 
+      invalidatesTags: (result, error, id) => [{ type: 'Vehicle', id }],
     }),
 
-   
+    // Get all vehicle specifications (for admin panel)
+    getAllVehicleSpecs: builder.query<VehicleSpec[], void>({
+      query: () => '/vehicle-specs',
+    }),
+
+    // Create a new vehicle specification
+    createVehicleSpec: builder.mutation<VehicleSpec, Omit<VehicleSpec, 'vehicleSpecId'>>({
+      query: (body) => ({
+        url: '/vehicle-specs',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in components
 export const {
   useGetAllVehiclesQuery,
+  useLazyGetFilteredVehiclesQuery,
   useGetVehicleByIdQuery,
   useCreateVehicleMutation,
   useUpdateVehicleMutation,
   useDeleteVehicleMutation,
+  useGetAllVehicleSpecsQuery,
+  useCreateVehicleSpecMutation,
 } = vehicleApi;
+export default vehicleApi
