@@ -82,7 +82,7 @@ export const userApi = createApi({
         // NEW: Add getBookingById query here, or in a separate bookingsApi.ts if preferred
         getBookingById: builder.query<BookingDetails, number>({
             query: (bookingId) => `bookings/${bookingId}`, // Assuming /api/bookings/:id endpoint
-            providesTags: (result, error, id) => [{ type: 'bookings', id }],
+            providesTags: (_result, _error, id) => [{ type: 'bookings', id }],
         }),
     }),
 });

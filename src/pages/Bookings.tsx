@@ -1,4 +1,4 @@
-// src/pages/Bookings.tsx
+
 export const Bookings = () => {
     return (
         <div className="p-4">

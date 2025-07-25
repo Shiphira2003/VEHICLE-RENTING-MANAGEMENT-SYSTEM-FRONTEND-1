@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useGetVehicleByIdQuery } from '../features/api/vehiclesApi';
 import { useCreateBookingMutation } from '../features/api/userApi';
 import { useGetAllLocationsQuery } from '../features/api/locationApi';
-import type { Vehicle } from '../types/vehicleDetails';
 import type { CreateBookingPayload } from '../types/Types';
 import type { LocationDetails } from '../types/locationDetails';
 import { FaCar, FaChair, FaGasPump, FaCogs, FaDollarSign, FaArrowLeft, FaMapMarkerAlt } from 'react-icons/fa';

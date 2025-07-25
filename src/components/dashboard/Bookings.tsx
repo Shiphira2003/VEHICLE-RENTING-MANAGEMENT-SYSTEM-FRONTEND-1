@@ -1,5 +1,4 @@
-// src/pages/UserBookings.tsx
-import React from 'react';
+
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../apps/store';import type { BookingDetails } from '../../types/BookingDetails';
 import Swal from 'sweetalert2';

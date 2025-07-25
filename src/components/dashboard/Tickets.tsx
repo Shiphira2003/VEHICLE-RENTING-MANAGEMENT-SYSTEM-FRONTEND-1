@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import  type { RootState } from '../../apps/store';
 import { useGetAllTicketsQuery, useCreateTicketMutation } from '../../features/api/ticketsApi';

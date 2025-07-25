@@ -1,4 +1,4 @@
-// src/components/StripeCheckoutButton.tsx
+
 import { useCreatePaymentMutation } from "../features/api/paymentsApi";
 
 interface Props {

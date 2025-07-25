@@ -1,4 +1,4 @@
-// pages/ImageUploadPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Upload, Eye, Star, RotateCw, Car } from 'lucide-react';

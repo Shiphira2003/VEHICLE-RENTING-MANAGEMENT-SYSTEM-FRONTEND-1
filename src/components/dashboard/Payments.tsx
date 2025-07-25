@@ -1,4 +1,4 @@
-// src/components/dashboard/UserPayments.tsx
+
 import React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../apps/store';

@@ -73,7 +73,7 @@ export const vehicleApi = createApi({
     // Get vehicle by ID
     getVehicleById: builder.query<Vehicle, number>({
       query: (id) => `/vehicles/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Vehicle', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Vehicle', id }],
     }),
 
     // Create a new vehicle
@@ -93,7 +93,7 @@ export const vehicleApi = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Vehicle', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Vehicle', id }],
     }),
 
     // Delete a vehicle
@@ -102,7 +102,7 @@ export const vehicleApi = createApi({
         url: `/vehicles/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Vehicle', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Vehicle', id }],
     }),
 
     // Get all vehicle specifications (for admin panel)

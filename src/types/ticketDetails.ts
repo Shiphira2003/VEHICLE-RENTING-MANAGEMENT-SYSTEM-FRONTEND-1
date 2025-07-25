@@ -1,4 +1,4 @@
-// src/types/TicketDetails.ts
+
 
 export interface TicketDetails {
   ticketId: number;

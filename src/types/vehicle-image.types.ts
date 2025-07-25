@@ -1,4 +1,4 @@
-// types/vehicle-image.types.ts
+
 export interface VehicleImage {
     image_id: string;
     vehicle_id: string;

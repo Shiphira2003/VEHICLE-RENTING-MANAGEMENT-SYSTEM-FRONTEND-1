@@ -1,4 +1,4 @@
-// services/vehicleImageService.ts
+
 import type { VehicleImage } from '../types/vehicle-image.types';
 
 class VehicleImageService {

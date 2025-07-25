@@ -1,4 +1,4 @@
-// src/features/api/ticketsApi.ts
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { TicketDetails, NewTicket, UpdateTicket } from '../../types/ticketDetails';
 
@@ -26,7 +26,7 @@ export const ticketsApi = createApi({
     }),
     getTicketById: builder.query<TicketDetails, number>({
       query: (id) => `tickets/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Tickets', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Tickets', id }],
     }),
     createTicket: builder.mutation<TicketDetails, NewTicket>({
       query: (newTicket) => ({
@@ -42,14 +42,14 @@ export const ticketsApi = createApi({
         method: 'PUT', // Or PATCH depending on your backend
         body: patch,
       }),
-      invalidatesTags: (result, error, { ticketId }) => [{ type: 'Tickets', id: ticketId }],
+      invalidatesTags: (_result, _error, { ticketId }) => [{ type: 'Tickets', id: ticketId }],
     }),
     deleteTicket: builder.mutation<void, number>({
       query: (id) => ({
         url: `tickets/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Tickets', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Tickets', id }],
     }),
   }),
 });

@@ -5,7 +5,6 @@ import {
   useGetAllVehiclesQuery,
   useLazyGetFilteredVehiclesQuery 
 } from '../../features/api/vehiclesApi';
-import type { Vehicle } from '../../types/vehicleDetails';
 import { Toaster, toast } from 'sonner';
 
 export const VehiclesListing = () => {
@@ -49,7 +48,7 @@ export const VehiclesListing = () => {
       maxDailyPrice: filters.maxDailyPrice,
       sort: filters.sort as 'dailyRateAsc' | 'dailyRateDesc'
     });
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1); 
   };
 
   // Handle filter changes

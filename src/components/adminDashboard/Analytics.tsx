@@ -6,8 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend, PieChart, Pie, Cell
 } from "recharts";
-import { format } from "date-fns";
-import * as XLSX from "xlsx";
+
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { RootState } from "../../apps/store";
@@ -59,11 +58,6 @@ const ArrowUpIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ArrowDownIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
-  </svg>
-);
 
 const Analytics = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -73,7 +67,7 @@ const Analytics = () => {
   const { data: usersData = [], isLoading: usersLoading } = userApi.useGetAllUsersProfilesQuery(undefined, { skip: !isAuthenticated });
   const { data: vehiclesData = [], isLoading: vehiclesLoading } = useGetAllVehiclesQuery(undefined, { skip: !isAuthenticated });
   
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus] = useState("All");
 
   const totalBookings = bookingsData.length;
   const filteredBookings = filterStatus === "All" ? bookingsData : bookingsData.filter(b => b.bookingStatus === filterStatus);
@@ -104,7 +98,6 @@ const Analytics = () => {
 
   // New calculations for metrics
   const bookingPercentage = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
-  const paymentPercentage = totalPayments > 0 ? Math.round((completedPayments / totalPayments) * 100) : 0;
   const vehiclePercentage = totalVehicles > 0 ? Math.round((availableVehicles / totalVehicles) * 100) : 0;
   const ticketPercentage = totalTickets > 0 ? Math.round((closedTickets / totalTickets) * 100) : 0;
   const revenueChange = "+12%"; // Replace with actual calculation if available
@@ -333,7 +326,7 @@ const Analytics = () => {
                 outerRadius={100}
                 label
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

@@ -30,7 +30,7 @@ import { AllVehicles } from "./components/adminDashboard/AllVehicles"
 import { AllPayments } from "./components/adminDashboard/AllPayments"
 import ImageUploadPage from "./pages/ImageUploadPage"
 import TestImageUpload from "./pages/TestImageUpload"
-import PaymentsPage, { PaymentPage } from "./pages/Payment"
+import { PaymentPage } from "./pages/Payment"
 
 
 function App() {

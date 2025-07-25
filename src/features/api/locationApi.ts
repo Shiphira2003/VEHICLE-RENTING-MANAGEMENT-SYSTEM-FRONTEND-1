@@ -1,4 +1,4 @@
-// api/locationApi.ts
+
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store'; 
@@ -42,7 +42,7 @@ export const locationsApi = createApi({
                 method: 'PUT',
                 body: payload,
             }),
-            invalidatesTags: (result, error, arg) => [
+            invalidatesTags: (_result, _error, arg) => [
                 'Locations', // Invalidate the list
                 { type: 'Location', id: arg.locationId }, 
             ],
@@ -57,7 +57,7 @@ export const locationsApi = createApi({
         // ✅ Get location by ID
         getLocationById: builder.query<LocationDetails, number>({
             query: (locationId) => `locations/${locationId}`,
-            providesTags: (result, error, id) => [{ type: 'Location', id }], // Provide tag for specific location
+            providesTags: (_result, _error, id) => [{ type: 'Location', id }], // Provide tag for specific location
         }),
 
         // ✅ Delete a location

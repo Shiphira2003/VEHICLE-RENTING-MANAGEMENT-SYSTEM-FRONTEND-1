@@ -1,7 +1,19 @@
 import { SquareUserRound, LogOut, TrendingUpIcon, Home, Car, Users, Ticket, ListTodo } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearCredentials } from "../features/auth/authSlice"; // Update path to match your project structure
 
 export const AdminSideNav = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // Clear authentication credentials
+        dispatch(clearCredentials());
+        // Redirect to home page
+        navigate("/");
+    };
+
     return (
         <ul className="menu fixed top-0 left-0 pt-16 h-screen w-52 bg-gray-150 text-dark-300 shadow-lg gap-2 text-base-content p-4 z-40">
             {/* Analytics */}
@@ -63,10 +75,13 @@ export const AdminSideNav = () => {
 
             {/* Logout */}
             <li>
-                <Link to="#" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400">
+                <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400 w-full text-left"
+                >
                     <LogOut className="text-red-600 w-5 h-5" />
                     <span className="text-gray-800 text-base">Logout</span>
-                </Link>
+                </button>
             </li>
 
             {/* Home */}

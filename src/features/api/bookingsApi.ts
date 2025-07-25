@@ -41,7 +41,7 @@ export const bookingsApi = createApi({
                 method: 'PUT',
                 body: bookingUpdatePayload,
             }),
-            invalidatesTags: (result, error, arg) => [
+            invalidatesTags: (_result, _error, arg) => [
                 'Bookings',
                 { type: 'Booking', id: arg.bookingId },
             ],
@@ -56,7 +56,7 @@ export const bookingsApi = createApi({
         // ✅ Get booking by ID
         getBookingById: builder.query<BookingDetails, number>({
             query: (bookingId) => `bookings/${bookingId}`,
-            providesTags: (result, error, id) => [{ type: 'Booking', id }],
+            providesTags: (_result, _error, id) => [{ type: 'Booking', id }],
         }),
 
         // ✅ Get bookings by user ID

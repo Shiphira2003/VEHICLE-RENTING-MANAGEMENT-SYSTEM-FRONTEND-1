@@ -12,8 +12,8 @@ import { Navbar } from "../components/Navbar";
 type RegisterFormData = {
   firstName: string;
   lastName: string;
-  phone: string; // Added phone field
-  address: string; // Added address field
+  phone: string; 
+  address: string; 
   email: string;
   password: string;
 };
@@ -21,7 +21,7 @@ type RegisterFormData = {
 
 export const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
-  const [registerUser, { isLoading}] = userApi.useRegisterUserMutation();
+  const [registerUser] = userApi.useRegisterUserMutation();
   console.log(registerUser)
   const navigate = useNavigate();
 
