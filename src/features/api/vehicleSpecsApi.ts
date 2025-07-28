@@ -1,6 +1,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store';
+import { apiDomain } from '../../proxxy';
 
 export interface VehicleSpecification {
     vehicleSpecId: number;
@@ -42,7 +43,7 @@ export interface UpdateVehicleSpecPayload {
 export const vehicleSpecsApi = createApi({
     reducerPath: 'vehicleSpecsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/',
+        baseUrl: apiDomain,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.token;
             if (token) {

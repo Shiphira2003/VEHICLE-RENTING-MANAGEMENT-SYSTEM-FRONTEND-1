@@ -3,11 +3,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store'; 
 import type { LocationDetails, CreateLocationPayload, UpdateLocationPayload } from '../../types/locationDetails'; // Adjust path if necessary
+import { apiDomain } from '../../proxxy';
 
 export const locationsApi = createApi({
     reducerPath: 'locationsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/',
+        baseUrl: apiDomain,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.token; 
             if (token) {

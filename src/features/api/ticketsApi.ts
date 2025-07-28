@@ -1,14 +1,15 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { TicketDetails, NewTicket, UpdateTicket } from '../../types/ticketDetails';
+import { apiDomain } from '../../proxxy';
 
 export const ticketsApi = createApi({
   reducerPath: 'ticketsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/', 
+    baseUrl: apiDomain, 
     prepareHeaders: (headers, { getState }) => {
-      // Assuming you store your token in Redux state or localStorage
-      const token = (getState() as any).auth.token; // Adjust based on your auth slice
+      
+      const token = (getState() as any).auth.token;
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }

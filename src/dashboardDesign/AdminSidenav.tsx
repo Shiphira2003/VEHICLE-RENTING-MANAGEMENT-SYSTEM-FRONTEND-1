@@ -75,13 +75,13 @@ export const AdminSideNav = () => {
 
             {/* Logout */}
             <li>
-                <button 
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-400 w-full text-left"
-                >
-                    <LogOut className="text-red-600 w-5 h-5" />
-                    <span className="text-gray-800 text-base">Logout</span>
-                </button>
+               <button 
+  onClick={handleLogout}
+  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white hover:bg-gray-100 w-full text-left border border-gray-200"
+>
+  <LogOut className="text-red-600 w-5 h-5" />
+  <span className="text-purple-800 text-base">Logout</span>
+</button>
             </li>
 
             {/* Home */}

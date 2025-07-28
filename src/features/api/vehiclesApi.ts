@@ -5,8 +5,9 @@ import type {
   CreateVehiclePayload,
   UpdateVehiclePayload
 } from '../../types/vehicleDetails';
+import { apiDomain } from '../../proxxy';
 
-const BASE_URL = 'http://localhost:8000/api'; // Update with your API base URL
+const BASE_URL = apiDomain; 
 
 export const vehicleApi = createApi({
   reducerPath: 'vehiclesApi',

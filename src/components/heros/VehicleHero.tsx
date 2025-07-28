@@ -28,9 +28,6 @@ export const VehiclesListing = () => {
     isFetching: isFilterFetching 
   }] = useLazyGetFilteredVehiclesQuery();
 
-  // Determine which vehicles to display
-  const vehiclesToDisplay = filteredVehicles || allVehicles;
-
   // Get unique manufacturers for filter dropdown
   const manufacturers = Array.from(
     new Set(allVehicles?.map(v => v.vehicleSpec.manufacturer) || [])
@@ -40,6 +37,8 @@ export const VehiclesListing = () => {
   const applyFilters = () => {
     if (filters.searchQuery) {
       // Client-side search when search query is present
+      toast.info('Showing search results');
+      setCurrentPage(1);
       return;
     }
     
@@ -63,11 +62,7 @@ export const VehiclesListing = () => {
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (filters.searchQuery) {
-      toast.info('Using client-side search');
-    } else {
-      applyFilters();
-    }
+    applyFilters();
   };
 
   // Reset all filters
@@ -85,6 +80,20 @@ export const VehiclesListing = () => {
   useEffect(() => {
     applyFilters();
   }, []);
+
+  // Determine which vehicles to display with search functionality
+  const vehiclesToDisplay = filters.searchQuery 
+    ? allVehicles?.filter(vehicle => {
+        const searchTerm = filters.searchQuery.toLowerCase();
+        return (
+          vehicle.vehicleSpec.manufacturer.toLowerCase().includes(searchTerm) ||
+          vehicle.vehicleSpec.model.toLowerCase().includes(searchTerm) ||
+          vehicle.vehicleSpec.fuelType.toLowerCase().includes(searchTerm) ||
+          vehicle.vehicleSpec.transmission.toLowerCase().includes(searchTerm) ||
+          (vehicle.color && vehicle.color.toLowerCase().includes(searchTerm))
+        );
+      })
+    : filteredVehicles || allVehicles;
 
   // Pagination logic
   const indexOfLastVehicle = currentPage * vehiclesPerPage;
@@ -112,50 +121,56 @@ export const VehiclesListing = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="w-full bg-gray-50 min-h-screen">
       <Toaster richColors position="top-right" />
       
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow-lg p-6 mb-8 text-white py-16 px-4 text-center">
-        <h1 className="text-5xl font-extrabold mb-4">Find Your Perfect Ride</h1>
-        <p className="text-xl font-light">Choose from our wide selection of vehicles</p>
+      <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 text-white py-12 sm:py-16 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4">Find Your Perfect Ride</h1>
+          <p className="text-base sm:text-lg md:text-xl font-light">Choose from our wide selection of vehicles</p>
+        </div>
       </div>
 
-      <div className="container mx-auto px-4 pb-12">
+      {/* Main Content */}
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 pb-8 sm:pb-12">
         {/* Search and Filters Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+        <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md p-3 sm:p-4 md:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-3 sm:gap-4">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
               <FaFilter className="inline mr-2 text-purple-600" />
               Filter Vehicles
             </h2>
             
-            <form onSubmit={handleSearch} className="w-full md:w-auto">
-              <div className="join">
+            <form onSubmit={handleSearch} className="w-full md:w-auto min-w-[200px]">
+              <div className="join w-full">
                 <input
                   type="text"
                   id="searchQuery"
-                  placeholder="Search by model or features..."
-                  className="input input-bordered join-item w-full md:w-64"
+                  placeholder="Search vehicles..."
+                  className="input input-bordered join-item w-full text-sm sm:text-base"
                   value={filters.searchQuery}
                   onChange={handleFilterChange}
                 />
-                <button type="submit" className="btn join-item bg-purple-600 text-white hover:bg-purple-700">
-                  <FaSearch />
+                <button 
+                  type="submit" 
+                  className="btn join-item bg-purple-600 text-white hover:bg-purple-700 px-3 sm:px-4"
+                >
+                  <FaSearch className="text-sm sm:text-base" />
                 </button>
               </div>
             </form>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Manufacturer Filter */}
-            <div>
-              <label htmlFor="manufacturer" className="block text-gray-700 text-sm font-semibold mb-2">
+            <div className="w-full">
+              <label htmlFor="manufacturer" className="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">
                 Manufacturer
               </label>
               <select
                 id="manufacturer"
-                className="select select-bordered w-full"
+                className="select select-bordered w-full text-sm sm:text-base"
                 value={filters.manufacturer}
                 onChange={handleFilterChange}
               >
@@ -169,8 +184,8 @@ export const VehiclesListing = () => {
             </div>
 
             {/* Price Range Filter */}
-            <div>
-              <label htmlFor="maxDailyPrice" className="block text-gray-700 text-sm font-semibold mb-2">
+            <div className="w-full">
+              <label htmlFor="maxDailyPrice" className="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">
                 Max Daily Price: ${filters.maxDailyPrice}
               </label>
               <input
@@ -183,7 +198,7 @@ export const VehiclesListing = () => {
                 step="10"
                 onChange={handleFilterChange}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-[10px] xs:text-xs text-gray-500 mt-1">
                 <span>$0</span>
                 <span>$500</span>
                 <span>$1000+</span>
@@ -191,13 +206,13 @@ export const VehiclesListing = () => {
             </div>
 
             {/* Sort By */}
-            <div>
-              <label htmlFor="sort" className="block text-gray-700 text-sm font-semibold mb-2">
+            <div className="w-full">
+              <label htmlFor="sort" className="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">
                 Sort By
               </label>
               <select
                 id="sort"
-                className="select select-bordered w-full"
+                className="select select-bordered w-full text-sm sm:text-base"
                 value={filters.sort}
                 onChange={handleFilterChange}
               >
@@ -209,21 +224,22 @@ export const VehiclesListing = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-end space-x-2">
+            <div className="flex items-end gap-2 w-full">
               <button 
                 onClick={applyFilters}
-                className="btn bg-purple-600 hover:bg-purple-700 text-white flex-1"
+                className="btn bg-purple-600 hover:bg-purple-700 text-white flex-1 
+                          text-xs sm:text-sm min-h-[2.5rem] h-auto py-1.5"
                 disabled={isFilterFetching}
               >
                 {isFilterFetching ? (
-                  <span className="loading loading-spinner"></span>
+                  <span className="loading loading-spinner loading-sm"></span>
                 ) : (
                   'Apply Filters'
                 )}
               </button>
               <button 
                 onClick={resetFilters}
-                className="btn btn-outline flex-1"
+                className="btn btn-outline flex-1 text-xs sm:text-sm min-h-[2.5rem] h-auto py-1.5"
               >
                 Reset
               </button>
@@ -232,13 +248,13 @@ export const VehiclesListing = () => {
         </div>
 
         {/* Results Count */}
-        <div className="flex justify-between items-center mb-4">
-          <p className="text-gray-600">
+        <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center mb-3 sm:mb-4 gap-1 sm:gap-2">
+          <p className="text-gray-600 text-sm sm:text-base">
             Showing {currentVehicles.length} of {vehiclesToDisplay?.length || 0} vehicles
           </p>
           {isFilterFetching && (
-            <p className="text-purple-600 flex items-center">
-              <span className="loading loading-spinner loading-xs mr-2"></span>
+            <p className="text-purple-600 flex items-center text-sm sm:text-base">
+              <span className="loading loading-spinner loading-xs mr-1 sm:mr-2"></span>
               Updating results...
             </p>
           )}
@@ -247,59 +263,62 @@ export const VehiclesListing = () => {
         {/* Vehicles Grid */}
         {currentVehicles.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
               {currentVehicles.map((vehicle) => (
                 <div 
                   key={vehicle.vehicleId} 
-                  className="card bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                  className="card bg-white rounded-lg shadow-sm sm:shadow-md border border-gray-100 
+                            overflow-hidden hover:shadow-lg transition-shadow duration-300"
                 >
-                  <figure className="relative">
+                  <figure className="relative aspect-video">
                     <img
                       src={vehicle.imageUrl || '/default-car.jpg'}
                       alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/default-car.jpg';
                       }}
                     />
-                    <div className="absolute top-2 right-2 badge badge-accent text-white">
+                    <div className="absolute top-2 right-2 badge badge-accent text-white text-xs sm:text-sm">
                       ${vehicle.rentalRate}/day
                     </div>
                   </figure>
-                  <div className="card-body p-4">
-                    <h3 className="card-title text-lg font-bold text-gray-800">
+                  <div className="card-body p-3 sm:p-4">
+                    <h3 className="card-title text-base sm:text-lg font-bold text-gray-800">
                       {vehicle.vehicleSpec.manufacturer} {vehicle.vehicleSpec.model}
-                      <span className="text-sm font-normal text-gray-500 block">
+                      <span className="text-xs sm:text-sm font-normal text-gray-500 block">
                         {vehicle.vehicleSpec.year}
                       </span>
                     </h3>
 
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 my-2">
-                      <div className="flex items-center">
-                        <FaChair className="mr-1 text-purple-500" />
-                        {vehicle.vehicleSpec.seatingCapacity} Seats
+                    <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 my-1 sm:my-2">
+                      <div className="flex items-center truncate">
+                        <FaChair className="mr-1 text-purple-500 flex-shrink-0" />
+                        <span className="truncate">{vehicle.vehicleSpec.seatingCapacity} Seats</span>
                       </div>
-                      <div className="flex items-center">
-                        <FaGasPump className="mr-1 text-purple-500" />
-                        {vehicle.vehicleSpec.fuelType}
+                      <div className="flex items-center truncate">
+                        <FaGasPump className="mr-1 text-purple-500 flex-shrink-0" />
+                        <span className="truncate">{vehicle.vehicleSpec.fuelType}</span>
                       </div>
-                      <div className="flex items-center">
-                        <FaCogs className="mr-1 text-purple-500" />
-                        {vehicle.vehicleSpec.transmission}
+                      <div className="flex items-center truncate">
+                        <FaCogs className="mr-1 text-purple-500 flex-shrink-0" />
+                        <span className="truncate">{vehicle.vehicleSpec.transmission}</span>
                       </div>
-                      <div className="flex items-center">
-                        <FaCar className="mr-1 text-purple-500" />
-                        {vehicle.color || 'N/A'}
+                      <div className="flex items-center truncate">
+                        <FaCar className="mr-1 text-purple-500 flex-shrink-0" />
+                        <span className="truncate">{vehicle.color || 'N/A'}</span>
                       </div>
                     </div>
 
-                    <div className="card-actions justify-between items-center mt-4">
-                      <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} text-white`}>
+                    <div className="card-actions justify-between items-center mt-2 sm:mt-3">
+                      <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} 
+                                    text-white text-xs sm:text-sm`}>
                         {vehicle.availability ? 'Available' : 'Booked'}
                       </span>
                       <Link
                         to={`/vehicles/${vehicle.vehicleId}`}
-                        className="btn btn-sm bg-purple-600 hover:bg-purple-700 text-white"
+                        className="btn btn-sm bg-purple-600 hover:bg-purple-500 text-white 
+                                  text-xs sm:text-sm px-2 sm:px-3"
                       >
                         View Details
                       </Link>
@@ -311,12 +330,12 @@ export const VehiclesListing = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center mt-6 sm:mt-8">
                 <div className="join">
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="join-item btn"
+                    className="join-item btn btn-sm sm:btn-md"
                   >
                     «
                   </button>
@@ -324,7 +343,7 @@ export const VehiclesListing = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`join-item btn ${currentPage === page ? 'btn-active' : ''}`}
+                      className={`join-item btn btn-sm sm:btn-md ${currentPage === page ? 'btn-active' : ''}`}
                     >
                       {page}
                     </button>
@@ -332,7 +351,7 @@ export const VehiclesListing = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="join-item btn"
+                    className="join-item btn btn-sm sm:btn-md"
                   >
                     »
                   </button>
@@ -341,17 +360,17 @@ export const VehiclesListing = () => {
             )}
           </>
         ) : (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-purple-500 text-5xl mb-4">🚗</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">No vehicles found</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md p-6 sm:p-8 md:p-10 lg:p-12 text-center">
+            <div className="text-purple-500 text-4xl sm:text-5xl mb-3 sm:mb-4">🚗</div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">No vehicles found</h3>
+            <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4">
               {filters.manufacturer || filters.maxDailyPrice < 1000 
                 ? "Try adjusting your filters to see more results." 
                 : "We currently don't have any vehicles available."}
             </p>
             <button 
               onClick={resetFilters}
-              className="btn bg-purple-600 hover:bg-purple-700 text-white"
+              className="btn bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base"
             >
               Reset Filters
             </button>

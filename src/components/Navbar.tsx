@@ -24,9 +24,8 @@ export const Navbar = () => {
 
     return (
         <div className="navbar bg-gradient-to-r bg-purple-400 shadow-lg sticky top-0 z-50 border-b border-purple-200">
-            {/* Navbar Start */}
+            {/* Mobile Menu Button */}
             <div className="navbar-start">
-                {/* Mobile Dropdown */}
                 <div className="dropdown">
                     <div
                         tabIndex={0}
@@ -88,29 +87,50 @@ export const Navbar = () => {
                                     </li>
                                 </>
                             ) : (
-                                <li>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="text-gray-700 hover:text-purple-600 w-full text-left"
-                                    >
-                                        Logout
-                                    </button>
-                                </li>
+                                <>
+                                    {user?.role === 'admin' ? (
+                                        <li>
+                                            <Link to="/admindashboard/analytics" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
+                                                <GrDashboard className="text-lg text-purple-600" />
+                                                Admin Dashboard
+                                            </Link>
+                                        </li>
+                                    ) : (
+                                        <li>
+                                            <Link to="/userDashboard/my-profile" className="text-gray-700 hover:text-purple-600 hover:bg-purple-50" onClick={closeMenu}>
+                                                <GrDashboard className="text-lg text-purple-600" />
+                                                User Dashboard
+                                            </Link>
+                                        </li>
+                                    )}
+                                    <li>
+                                        <button
+                                            onClick={() => { handleLogout(); closeMenu(); }}
+                                            className="text-gray-700 hover:text-purple-600 w-full text-left flex items-center"
+                                        >
+                                            <FaSignOutAlt className="text-lg text-purple-600 mr-2" />
+                                            Logout
+                                        </button>
+                                    </li>
+                                </>
                             )}
                         </ul>
                     )}
                 </div>
 
-                {/* Logo */}
+                {/* Logo - Visible on all screens */}
                 <Link to="/" className="btn btn-ghost text-xl hover:bg-purple-700 px-2">
                     <FaCar className="text-2xl text-white" />
-                    <span className="font-bold text-white">
+                    <span className="font-bold text-white hidden sm:inline">
                         SHIWAMA DRIVE
+                    </span>
+                    <span className="font-bold text-white sm:hidden">
+                        SD
                     </span>
                 </Link>
             </div>
 
-            {/* Navbar Center - Desktop Menu */}
+            {/* Desktop Navigation - Hidden on mobile */}
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1 gap-2">
                     <li>
@@ -134,18 +154,18 @@ export const Navbar = () => {
                 </ul>
             </div>
 
-            {/* Navbar End - Auth Buttons */}
-            {!isAuthenticated ? (
-                <div className="navbar-end hidden lg:flex gap-2">
-                    <Link to="/login" className="btn btn-ghost text-white hover:text-purple-200 hover:bg-purple-700">
-                        Login
-                    </Link>
-                    <Link to="/register" className="btn bg-purple-600 hover:bg-purple-700 text-white border-none shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                        Sign Up
-                    </Link>
-                </div>
-            ) : (
-                <div className="navbar-end hidden lg:flex gap-2">
+            {/* Auth Buttons - Hidden on mobile */}
+            <div className="navbar-end hidden lg:flex gap-2">
+                {!isAuthenticated ? (
+                    <>
+                        <Link to="/login" className="btn btn-ghost text-white hover:text-purple-200 hover:bg-purple-700">
+                            Login
+                        </Link>
+                        <Link to="/register" className="btn bg-purple-600 hover:bg-purple-700 text-white border-none shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                            Sign Up
+                        </Link>
+                    </>
+                ) : (
                     <div className="dropdown dropdown-end bg-purple-700 rounded-lg">
                         <button tabIndex={0} role="button" className="btn btn-ghost flex items-center text-white hover:bg-purple-600">
                             <div className="flex items-center">
@@ -199,6 +219,15 @@ export const Navbar = () => {
                             </li>
                         </ul>
                     </div>
+                )}
+            </div>
+
+            {/* Mobile Auth Buttons - Visible only on mobile */}
+            {!isAuthenticated && (
+                <div className="navbar-end lg:hidden flex gap-2">
+                    <Link to="/login" className="btn btn-ghost text-white hover:bg-purple-700 px-2">
+                        Login
+                    </Link>
                 </div>
             )}
         </div>

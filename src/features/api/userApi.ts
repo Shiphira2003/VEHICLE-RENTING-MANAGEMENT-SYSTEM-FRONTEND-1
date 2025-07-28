@@ -4,11 +4,12 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import  type { CreateBookingPayload } from '../../types/Types';
 import type { BookingDetails } from '../../types/BookingDetails'; // Import BookingDetails too
 import type { RootState } from '../../apps/store'; // Assuming you have this for token access
+import { apiDomain } from '../../proxxy';
 
 export const userApi = createApi({
     reducerPath: 'userApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/',
+        baseUrl:apiDomain ,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.token;
             if (token) {

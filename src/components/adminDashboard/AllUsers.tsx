@@ -176,21 +176,21 @@ export const AllUsers = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-center mb-4 text-purple-900">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <h1 className="text-2xl font-bold text-purple-900">
           Manage All Users
         </h1>
         <button
           onClick={handleAddModalToggle}
-          className="btn btn-primary flex items-center gap-2"
+          className="btn btn-primary flex items-center gap-2 w-full sm:w-auto"
         >
           <FiPlus /> Add User
         </button>
       </div>
 
       {/* Filter Controls */}
-      <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <div className="flex items-center gap-2">
             <FiFilter className="text-purple-600" />
             <span className="text-gray-700 font-medium">Filter by Role:</span>
@@ -198,7 +198,7 @@ export const AllUsers = () => {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="select select-bordered w-full max-w-xs"
+            className="select select-bordered w-full sm:w-40"
           >
             <option value="All">All Roles</option>
             <option value="user">User</option>
@@ -206,12 +206,12 @@ export const AllUsers = () => {
             <option value="disabled">Disabled</option>
           </select>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 w-full sm:w-auto text-right">
           Showing {filteredUsers.length} of {usersData.length} users
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-6">
+      <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-4 sm:p-6">
         {fetchError ? (
           <div className="text-red-600 text-center py-4 text-lg">
             Error fetching user data. Please try again.
@@ -226,89 +226,97 @@ export const AllUsers = () => {
             No {roleFilter === "All" ? "" : roleFilter} users found.
           </div>
         ) : (
-          <table className="table w-full text-left">
-            <thead>
-              <tr className="bg-purple-100 text-purple-800 text-sm uppercase">
-                <th className="p-4 rounded-tl-lg"> # </th>
-                <th className="p-4">User</th>
-                <th className="p-4">Joined On</th>
-                <th className="p-4">Role</th>
-                <th className="p-4 rounded-tr-lg">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers?.map((user: UserDetail) => (
-                <tr key={user.id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                  <th className="p-4 text-gray-700"> {user.id} </th>
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle h-12 w-12 border-2 border-orange-400">
-                          <img
-                            src={user.profileUrl || "/default-avatar.png"}
-                            alt={`${user.firstName} ${user.lastName} Avatar`}
-                            className="object-cover"
-                          />
+          <div className="overflow-x-auto">
+            <table className="table w-full text-left">
+              <thead>
+                <tr className="bg-purple-100 text-purple-800 text-sm uppercase">
+                  <th className="p-3 sm:p-4 rounded-tl-lg">#</th>
+                  <th className="p-3 sm:p-4">User ID</th>
+                  <th className="p-3 sm:p-4">User</th>
+                  <th className="p-3 sm:p-4">Joined On</th>
+                  <th className="p-3 sm:p-4">Role</th>
+                  <th className="p-3 sm:p-4 rounded-tr-lg">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers?.map((user: UserDetail, index: number) => (
+                  <tr key={user.id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                    <td className="p-3 sm:p-4 text-gray-700">{index + 1}</td>
+                    <td className="p-3 sm:p-4 text-gray-700 font-mono">{user.id}</td>
+                    <td className="p-3 sm:p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="avatar">
+                          <div className="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 border-2 border-orange-400">
+                            <img
+                              src={user.profileUrl || "/default-avatar.png"}
+                              alt={`${user.firstName} ${user.lastName} Avatar`}
+                              className="object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-purple-700 text-sm sm:text-base">
+                            {user.firstName} {user.lastName}
+                          </div>
+                          <div className="text-xs sm:text-sm opacity-70 text-gray-600">{user.email}</div>
                         </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-purple-700">{user.firstName} {user.lastName}</div>
-                        <div className="text-sm opacity-70 text-gray-600">{user.email}</div>
+                    </td>
+                    <td className="p-3 sm:p-4 text-gray-700 text-sm sm:text-base">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3 sm:p-4">
+                      <div className="flex items-center">
+                        <span className={`badge text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1 rounded-full ${getUserRoleBadge(user.role)}`}>
+                          {user.role}
+                        </span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-700"> {new Date(user.createdAt).toLocaleDateString()}</td>
-                  <td className="p-4">
-                    <div className="flex items-center">
-                      <span className={`badge text-xs font-semibold px-3 py-1 rounded-full ${getUserRoleBadge(user.role)} `}>
-                        {user.role}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
-                      <button
-                        className="btn btn-sm btn-outline border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors duration-200"
-                        onClick={() => handleEditModalToggle(user)}
-                      >
-                        <FiEdit className="w-4 h-4" />
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-200"
-                        onClick={() => handleDeleteUser(user.id)}
-                      >
-                        <FiTrash2 className="w-4 h-4" />
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                          className="btn btn-sm btn-outline border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors duration-200 flex items-center gap-1"
+                          onClick={() => handleEditModalToggle(user)}
+                        >
+                          <FiEdit className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="text-xs sm:text-sm">Edit</span>
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-200 flex items-center gap-1"
+                          onClick={() => handleDeleteUser(user.id)}
+                        >
+                          <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="text-xs sm:text-sm">Delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {/* Edit User Role Modal */}
       {isEditModalOpen && selectedUser && (
         <div className="modal modal-open flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="modal-box bg-white p-8 rounded-lg shadow-xl relative max-w-lg w-full">
+          <div className="modal-box bg-white p-6 sm:p-8 rounded-lg shadow-xl relative max-w-lg w-full mx-4">
             <button
-              className="btn btn-sm btn-circle absolute right-4 top-4 bg-gray-200 hover:bg-gray-300 text-gray-700"
+              className="btn btn-sm btn-circle absolute right-2 top-2 sm:right-4 sm:top-4 bg-gray-200 hover:bg-gray-300 text-gray-700"
               onClick={() => handleEditModalToggle()}
             >
               ✕
             </button>
-            <div className="flex justify-center items-center mb-6">
-              <h2 className="text-2xl font-bold text-purple-700">Change User Role for {selectedUser.firstName}</h2>
+            <div className="text-center mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-purple-700">Change User Role for {selectedUser.firstName}</h2>
             </div>
             <form onSubmit={handleRoleUpdate}>
               <div className="mb-6">
                 <label htmlFor="userRole" className="block text-sm font-medium text-gray-700 mb-2">User Role</label>
                 <select
                   id="userRole"
-                  className="select select-bordered w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  className="select select-bordered w-full p-2 sm:p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as 'user' | 'admin' | 'disabled')}
                 >
@@ -318,17 +326,17 @@ export const AllUsers = () => {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => handleEditModalToggle()}
-                  className="btn bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 flex items-center gap-2"
+                  className="btn bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <FaTimes /> Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 flex items-center gap-2"
+                  className="btn bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <SaveIcon className="w-4 h-4"/> Save Changes
                 </button>
@@ -341,15 +349,15 @@ export const AllUsers = () => {
       {/* Add User Modal */}
       {isAddModalOpen && (
         <div className="modal modal-open flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="modal-box bg-white p-8 rounded-lg shadow-xl relative max-w-2xl w-full">
+          <div className="modal-box bg-white p-6 sm:p-8 rounded-lg shadow-xl relative max-w-2xl w-full mx-4">
             <button
-              className="btn btn-sm btn-circle absolute right-4 top-4 bg-gray-200 hover:bg-gray-300 text-gray-700"
+              className="btn btn-sm btn-circle absolute right-2 top-2 sm:right-4 sm:top-4 bg-gray-200 hover:bg-gray-300 text-gray-700"
               onClick={handleAddModalToggle}
             >
               ✕
             </button>
-            <div className="flex justify-center items-center mb-6">
-              <h2 className="text-2xl font-bold text-purple-700">Add New User</h2>
+            <div className="text-center mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-purple-700">Add New User</h2>
             </div>
             <form onSubmit={handleAddUser}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -437,17 +445,17 @@ export const AllUsers = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={handleAddModalToggle}
-                  className="btn bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 flex items-center gap-2"
+                  className="btn bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <FaTimes /> Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 flex items-center gap-2"
+                  className="btn bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <SaveIcon className="w-4 h-4"/> Add User
                 </button>

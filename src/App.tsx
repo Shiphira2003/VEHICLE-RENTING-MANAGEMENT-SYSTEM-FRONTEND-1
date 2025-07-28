@@ -23,14 +23,12 @@ import UserPayments from "./components/dashboard/Payments"
 import UserTickets from "./components/dashboard/Tickets"
 import Analytics from "./components/adminDashboard/Analytics"
 
-import PaymentSuccessPage from "./pages/PaymentSuccess"
 import { Bookings } from "./pages/Bookings"
 import { VDetails } from "./pages/VDetails"
 import { AllVehicles } from "./components/adminDashboard/AllVehicles"
 import { AllPayments } from "./components/adminDashboard/AllPayments"
 import ImageUploadPage from "./pages/ImageUploadPage"
 import TestImageUpload from "./pages/TestImageUpload"
-import { PaymentPage } from "./pages/Payment"
 
 
 function App() {
@@ -71,16 +69,16 @@ function App() {
     //   errorElement: <Error />,
     // },
 
-    {
-      path: 'payment/:bookingId',
-      element: <PaymentPage/>,
-      errorElement: <Error />,
-    },
-    {
-      path: 'payment-success/:paymentId',
-      element: <PaymentSuccessPage />,
-      errorElement: <Error />,
-    },
+    // {
+    //   path: 'payment/:bookingId',
+    //   element: <PaymentPage/>,
+    //   errorElement: <Error />,
+    // },
+    // {
+    //   path: 'payment-success/:paymentId',
+    //   element: <PaymentSuccessPage />,
+    //   errorElement: <Error />,
+    // },
 
     {
       path: 'userDashboard',

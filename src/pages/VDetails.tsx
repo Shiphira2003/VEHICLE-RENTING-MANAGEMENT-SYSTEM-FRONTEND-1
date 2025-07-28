@@ -142,97 +142,114 @@ export const VDetails = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-500 via-gray-500 to-gray-500 py-10 px-4 sm:px-90">
-      <div className="w-full min-h-full bg-white rounded-3xl shadow-xl border border-gray-200 overflow-auto p-6 py-8">
+    <div className="min-h-screen w-full bg-gray-100 py-4 sm:py-8 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <Toaster richColors position="top-right" />
-        <button onClick={() => navigate(-1)} className="btn btn-ghost text-purple-600 mb-4">
-          <FaArrowLeft className="mr-2" /> Back to Vehicles
-        </button>
+        
+        {/* Back Button */}
+        <div className="px-4 sm:px-6 pt-4">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="btn btn-ghost text-purple-600 hover:text-purple-800 flex items-center"
+          >
+            <FaArrowLeft className="mr-2" /> 
+            <span className="text-sm sm:text-base">Back to Vehicles</span>
+          </button>
+        </div>
 
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row w-full">
-          <div className="flex-1">
-            <img
-              src={vehicle.imageUrl}
-              alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
-              className="w-full h-50 object-cover"
-            />
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row">
+          {/* Vehicle Image */}
+          <div className="lg:w-1/2 p-4 sm:p-6">
+            <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-md">
+              <img
+                src={vehicle.imageUrl}
+                alt={`${vehicle.vehicleSpec.manufacturer} ${vehicle.vehicleSpec.model}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
 
-          <div className="flex-1 p-8">
-            <h1 className="text-4xl font-extrabold text-purple-800 mb-2">
+          {/* Vehicle Details */}
+          <div className="lg:w-1/2 p-4 sm:p-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
               {vehicle.vehicleSpec.manufacturer} {vehicle.vehicleSpec.model}
             </h1>
-            <p className="text-gray-700 text-lg mb-4">{vehicle.description}</p>
+            <p className="text-gray-600 text-sm sm:text-base mb-4">{vehicle.description}</p>
 
-            <div className="grid grid-cols-2 gap-y-3 text-gray-600 text-base mb-6">
+            {/* Vehicle Specs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700 mb-6">
               <div className="flex items-center gap-2">
-                <FaCar className="text-purple-600" /> Manufacturer: {vehicle.vehicleSpec.manufacturer}
-              </div>
-              <div className="flex items-center gap-2">
-                <FaCar className="text-purple-600" /> Model: {vehicle.vehicleSpec.model}
-              </div>
-              <div className="flex items-center gap-2">
-                <FaChair className="text-purple-600" /> Seats: {vehicle.vehicleSpec.seatingCapacity}
+                <FaCar className="text-purple-600" />
+                <span className="text-sm sm:text-base">Manufacturer: {vehicle.vehicleSpec.manufacturer}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaGasPump className="text-purple-600" /> Fuel: {vehicle.vehicleSpec.fuelType}
+                <FaCar className="text-purple-600" />
+                <span className="text-sm sm:text-base">Model: {vehicle.vehicleSpec.model}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaCogs className="text-purple-600" /> Transmission: {vehicle.vehicleSpec.transmission}
+                <FaChair className="text-purple-600" />
+                <span className="text-sm sm:text-base">Seats: {vehicle.vehicleSpec.seatingCapacity}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaDollarSign className="text-purple-600" /> Daily Rate:
-                <span className="text-2xl font-bold text-orange-600 ml-1">${vehicle.rentalRate}</span>
+                <FaGasPump className="text-purple-600" />
+                <span className="text-sm sm:text-base">Fuel: {vehicle.vehicleSpec.fuelType}</span>
               </div>
-              <div className="flex items-center gap-2 col-span-2">
-                Color: {vehicle.color ?? 'Not specified'}
+              <div className="flex items-center gap-2">
+                <FaCogs className="text-purple-600" />
+                <span className="text-sm sm:text-base">Transmission: {vehicle.vehicleSpec.transmission}</span>
               </div>
-              <div className="flex items-center gap-2 col-span-2">
-                <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} text-white`}>
+              <div className="flex items-center gap-2">
+                <FaDollarSign className="text-purple-600" />
+                <span className="text-sm sm:text-base">Daily Rate: </span>
+                <span className="text-lg sm:text-xl font-bold text-orange-600">${vehicle.rentalRate}</span>
+              </div>
+              <div className="flex items-center gap-2 sm:col-span-2">
+                <span className="text-sm sm:text-base">Color: {vehicle.color ?? 'Not specified'}</span>
+              </div>
+              <div className="sm:col-span-2">
+                <span className={`badge ${vehicle.availability ? 'badge-success' : 'badge-error'} text-white text-sm sm:text-base`}>
                   {vehicle.availability ? 'Available for Rent' : 'Currently Unavailable'}
                 </span>
               </div>
             </div>
 
-            <form onSubmit={handleBookingSubmit} className="space-y-4 mt-6">
-              <h3 className="text-2xl font-bold text-purple-800 mb-4">Book This Vehicle</h3>
+            {/* Booking Form */}
+            <form onSubmit={handleBookingSubmit} className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Book This Vehicle</h3>
 
               {/* Location Select */}
-              {locations.length > 0 ? (
-                <div>
-                  <label htmlFor="location" className="block text-gray-700 text-sm font-semibold mb-2">
-                    <FaMapMarkerAlt className="inline mr-1" /> Pickup Location
-                  </label>
-                  <select
-                    id="location"
-                    className="select select-bordered w-full"
-                    value={locationId || ''}
-                    onChange={(e) => setLocationId(Number(e.target.value))}
-                    required
-                    disabled={isLocationsLoading}
-                  >
-                    {isLocationsLoading ? (
-                      <option>Loading locations...</option>
-                    ) : (
-                      locations.map((location: LocationDetails) => (
-                        <option key={location.locationId} value={location.locationId}>
-                          {location.name} - {location.address}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
-              ) : (
-                <div className="text-orange-600">
-                  {isLocationsLoading ? 'Loading locations...' : 'No locations available'}
-                </div>
-              )}
+              <div className="form-control">
+                <label htmlFor="location" className="label">
+                  <span className="label-text flex items-center gap-1">
+                    <FaMapMarkerAlt className="text-purple-600" /> Pickup Location
+                  </span>
+                </label>
+                <select
+                  id="location"
+                  className="select select-bordered w-full"
+                  value={locationId || ''}
+                  onChange={(e) => setLocationId(Number(e.target.value))}
+                  required
+                  disabled={isLocationsLoading}
+                >
+                  {isLocationsLoading ? (
+                    <option>Loading locations...</option>
+                  ) : (
+                    locations.map((location: LocationDetails) => (
+                      <option key={location.locationId} value={location.locationId}>
+                        {location.name} - {location.address}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
 
               {/* Date Pickers */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="pickupDateTime" className="block text-gray-700 text-sm font-semibold mb-2">
-                    Pick-up Date & Time
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="form-control">
+                  <label htmlFor="pickupDateTime" className="label">
+                    <span className="label-text">Pick-up Date & Time</span>
                   </label>
                   <input
                     type="datetime-local"
@@ -245,9 +262,9 @@ export const VDetails = () => {
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="dropoffDateTime" className="block text-gray-700 text-sm font-semibold mb-2">
-                    Drop-off Date & Time
+                <div className="form-control">
+                  <label htmlFor="dropoffDateTime" className="label">
+                    <span className="label-text">Drop-off Date & Time</span>
                   </label>
                   <input
                     type="datetime-local"
@@ -262,9 +279,9 @@ export const VDetails = () => {
               </div>
 
               {/* Additional Notes */}
-              <div>
-                <label htmlFor="additionalRequests" className="block text-gray-700 text-sm font-semibold mb-2">
-                  Additional Requests (Optional)
+              <div className="form-control">
+                <label htmlFor="additionalRequests" className="label">
+                  <span className="label-text">Additional Requests (Optional)</span>
                 </label>
                 <textarea
                   id="additionalRequests"
@@ -277,87 +294,104 @@ export const VDetails = () => {
               </div>
 
               {/* Total */}
-              <div className="text-xl font-bold text-right text-purple-800">
+              <div className="text-lg sm:text-xl font-bold text-right text-gray-800">
                 Total Estimated Cost: <span className="text-orange-600">${totalCost.toFixed(2)}</span>
               </div>
 
               {/* Buttons */}
-              {vehicle.availability ? (
-                <button
-                  type="submit"
-                  className="btn bg-orange-500 hover:bg-orange-600 text-white w-full mt-4"
-                  disabled={isBookingLoading || totalCost <= 0 || locationId === null}
+              <div className="flex flex-col sm:flex-row gap-2">
+                {vehicle.availability ? (
+                  <button
+                    type="submit"
+                    className="btn bg-orange-500 hover:bg-orange-600 text-white flex-1"
+                    disabled={isBookingLoading || totalCost <= 0 || locationId === null}
+                  >
+                    {isBookingLoading ? (
+                      <span className="loading loading-spinner" />
+                    ) : (
+                      'Book Now'
+                    )}
+                  </button>
+                ) : (
+                  <button className="btn btn-disabled flex-1" disabled>
+                    Currently Unavailable
+                  </button>
+                )}
+                <button 
+                  type="button" 
+                  className="btn btn-outline flex-1" 
+                  onClick={() => navigate(-1)}
                 >
-                  {isBookingLoading ? <span className="loading loading-spinner" /> : 'Book Now'}
+                  Go Back
                 </button>
-              ) : (
-                <button className="btn btn-disabled w-full mt-4" disabled>
-                  Currently Unavailable
-                </button>
-              )}
+              </div>
 
-              <button type="button" className="btn btn-outline w-full mt-4" onClick={() => navigate(-1)}>
-                Go Back
-              </button>
-
+              {/* Auth Status */}
               {!isAuthenticated ? (
                 <p className="text-sm text-gray-500 text-center mt-2">
                   You must be <Link to="/login" className="text-blue-500 hover:underline">logged in</Link> to book a vehicle.
                 </p>
               ) : (
-                <div className="text-sm text-gray-500 text-center mt-2">Booking as: {user?.email}</div>
+                <div className="text-sm text-gray-500 text-center mt-2">
+                  Booking as: {user?.email}
+                </div>
               )}
             </form>
           </div>
         </div>
-
-        {/* Payment Modal */}
-        {showPaymentModal && (
-          <dialog id="payment_modal" className="modal modal-open">
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">Proceed to Payment</h3>
-              <p className="py-2">Booking ID: {newBookingId}</p>
-              <p className="py-2 text-purple-600 font-semibold">Total: ${totalCost.toFixed(2)}</p>
-
-              <div className="modal-action">
-                <button
-                  className="btn bg-orange-500 hover:bg-orange-600 text-white"
-                  onClick={async () => {
-                    try {
-                      const res = await fetch("http://localhost:8000/api/payments/checkout-session", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          amount: Math.round(totalCost * 100),
-                          bookingId: newBookingId,
-                          userId: user?.userId,
-                        }),
-                      });
-
-                      const data = await res.json();
-                      if (data?.url) {
-                        window.location.href = data.url;
-                      } else {
-                        toast.error("Failed to create payment session");
-                      }
-                    } catch (err: any) {
-                      toast.error("Error: " + err.message);
-                    }
-                  }}
-                >
-                  Pay Now
-                </button>
-
-                <button className="btn" onClick={() => setShowPaymentModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </dialog>
-        )}
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-md">
+            <h3 className="font-bold text-lg">Proceed to Payment</h3>
+            <div className="py-4 space-y-2">
+              <p>Booking ID: {newBookingId}</p>
+              <p className="text-lg font-semibold text-purple-600">
+                Total: ${totalCost.toFixed(2)}
+              </p>
+            </div>
+            <div className="modal-action">
+              <button
+                className="btn bg-orange-500 hover:bg-orange-600 text-white"
+                onClick={async () => {
+                  try {
+                    const res = await fetch("http://localhost:8000/api/payments/checkout-session", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        amount: Math.round(totalCost * 100),
+                        bookingId: newBookingId,
+                        userId: user?.userId,
+                      }),
+                    });
+
+                    const data = await res.json();
+                    if (data?.url) {
+                      window.location.href = data.url;
+                    } else {
+                      toast.error("Failed to create payment session");
+                    }
+                  } catch (err: any) {
+                    toast.error("Error: " + err.message);
+                  }
+                }}
+              >
+                Pay Now
+              </button>
+              <button 
+                className="btn btn-ghost" 
+                onClick={() => setShowPaymentModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

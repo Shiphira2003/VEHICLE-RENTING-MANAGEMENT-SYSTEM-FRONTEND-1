@@ -2,11 +2,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../apps/store';
 import type { PaymentDetails, NewPayment, UpdatePayment } from '../../types/paymentDetails';
+import { apiDomain } from '../../proxxy';
 
 export const paymentsApi = createApi({
     reducerPath: 'paymentsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/',
+        baseUrl:apiDomain,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.token; 
             if (token) {
