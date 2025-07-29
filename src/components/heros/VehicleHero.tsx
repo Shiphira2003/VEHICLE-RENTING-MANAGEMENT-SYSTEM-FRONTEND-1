@@ -7,21 +7,6 @@ import {
 } from '../../features/api/vehiclesApi';
 import { Toaster, toast } from 'sonner';
 
-interface Vehicle {
-  vehicleId: string;
-  imageUrl: string;
-  rentalRate: number;
-  color?: string;
-  availability: boolean;
-  vehicleSpec: {
-    manufacturer: string;
-    model: string;
-    year: number;
-    seatingCapacity: number;
-    fuelType: string;
-    transmission: string;
-  };
-}
 
 export const VehiclesListing = () => {
   // State for filters and search

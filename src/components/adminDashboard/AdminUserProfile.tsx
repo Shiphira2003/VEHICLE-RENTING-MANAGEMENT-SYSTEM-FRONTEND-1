@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { FaCamera, FaEdit, FaTimes } from 'react-icons/fa';
 import { useSelector } from "react-redux";
-import { useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { SaveIcon } from 'lucide-react';
 import type { RootState } from '../../apps/store';
@@ -19,8 +18,7 @@ interface FormValues {
 }
 
 const AdminUserProfile = () => {
-  const navigate = useNavigate();
-  const { user, isAuthenticated, role } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({
     defaultValues: {
