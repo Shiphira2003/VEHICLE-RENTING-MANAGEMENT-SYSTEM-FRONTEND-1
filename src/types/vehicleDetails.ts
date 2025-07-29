@@ -8,6 +8,7 @@ export interface VehicleSpec {
   manufacturer: string;
   model: string;
   year: number;
+  
   fuelType: FuelType;
   engineCapacity: string;
   seatingCapacity: number;

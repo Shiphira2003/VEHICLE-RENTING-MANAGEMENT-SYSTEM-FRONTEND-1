@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import type { Vehicle, CreateVehiclePayload, UpdateVehiclePayload } from '../../types/vehicleDetails';
 import { useCreateVehicleMutation, useUpdateVehicleMutation } from '../../features/api/vehiclesApi';
 import { useGetAllVehicleSpecsQuery } from '../../features/api/vehicleSpecsApi';
+import Footer from '../Footer';
+import { Navbar } from '../Navbar';
 
 // Vehicle Specification interface - now using from API
 // Remove this interface as we're importing from API
@@ -158,6 +160,8 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
     if (!isOpen) return null;
 
     return (
+         <>
+              <Navbar />
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
@@ -193,7 +197,7 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                                     name="vehicleSpecId"
                                     value={formData.vehicleSpecId}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.vehicleSpecId ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2  text-black border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.vehicleSpecId ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                 >
                                     <option value="">Select a vehicle specification</option>
@@ -243,7 +247,7 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                                             </div>
                                         </div>
                                         <div className="mt-2">
-                                            <strong className='text-black'>Features:</strong> {selectedSpec.features}
+                                           <span className='text-black'> <strong className='text-black'>Features:</strong> {selectedSpec.features}</span>
                                         </div>
                                     </div>
                                 )}
@@ -252,7 +256,7 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                             {/* Rental Rate */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    <DollarSign className="inline h-4 w-4 mr-1" />
+                                    <DollarSign className="inline h-4 w-4 mr-1 className=' text-black'" />
                                     Rental Rate (per day) *
                                 </label>
                                 <div className="relative">
@@ -264,7 +268,7 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                                         onChange={handleInputChange}
                                         min="0"
                                         step="0.01"
-                                        className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.rentalRate ? 'border-red-500' : 'border-gray-300'
+                                        className={`w-full pl-8 pr-3 py-2  text-black border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.rentalRate ? 'border-red-500' : 'border-gray-300'
                                             }`}
                                         placeholder="0.00"
                                     />
@@ -400,6 +404,8 @@ export const VehicleModal: React.FC<VehicleModalProps> = ({
                 </form>
             </div>
         </div>
+        <Footer/>
+        </>
     );
 };
 

@@ -9,6 +9,8 @@ import { FaCar, FaChair, FaGasPump, FaCogs, FaDollarSign, FaArrowLeft, FaMapMark
 import { useSelector } from 'react-redux';
 import type { RootState } from '../apps/store';
 import { Toaster, toast } from 'sonner';
+import Footer from '../components/Footer';
+import { Navbar } from '../components/Navbar';
 
 export const VDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -136,6 +138,7 @@ export const VDetails = () => {
 
   if (vehicleError || !vehicle) {
     return (
+      
       <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-700 p-4 w-full">
         <p>{vehicleError ? 'Error loading vehicle details' : 'Vehicle not found.'}</p>
       </div>
@@ -143,6 +146,8 @@ export const VDetails = () => {
   }
 
   return (
+     <>
+            <Navbar />
     <div className="min-h-screen w-full bg-gray-100 py-4 sm:py-8 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <Toaster richColors position="top-right" />
@@ -394,6 +399,8 @@ export const VDetails = () => {
         </div>
       )}
     </div>
+    <Footer/>
+    </>
   );
 };
 
