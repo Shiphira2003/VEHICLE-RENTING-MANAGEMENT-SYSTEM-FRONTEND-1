@@ -8,7 +8,6 @@ import { ticketsApi } from "../../features/api/ticketsApi";
 import type { TicketDetails } from "../../types/ticketDetails";
 import { useState } from "react";
 
-// Helper function to get badge class based on ticket status
 const getTicketStatusBadge = (status: TicketDetails["status"]) => {
   switch (status) {
     case "Open":
@@ -31,25 +30,20 @@ export const AllTickets = () => {
     isLoading,
     error,
   } = ticketsApi.useGetAllTicketsQuery(undefined, { skip: !isAuthenticated });
-  const [updateTicket] = ticketsApi.useUpdateTicketMutation();
+  const [] = ticketsApi.useUpdateTicketMutation();
   const [deleteTicket] = ticketsApi.useDeleteTicketMutation();
 
-  // Filter tickets based on status
   const filteredTickets = ticketsData.filter((ticket: TicketDetails) => {
     if (statusFilter === "All") return true;
     return ticket.status === statusFilter;
   });
 
   const handleUpdateTicketStatus = async (
-    ticketId: number,
+    _ticketId: number,
     currentStatus: TicketDetails["status"]
   ) => {
-    let newStatus: TicketDetails["status"];
-    if (currentStatus === "Open" || currentStatus === "Pending") {
-      newStatus = "Closed";
-    } else {
-      newStatus = "Open"; // Allow re-opening
-    }
+    let newStatus: TicketDetails["status"] =
+      currentStatus === "Closed" ? "Open" : "Closed";
 
     Swal.fire({
       title: `Confirm ${newStatus} Ticket?`,
@@ -62,12 +56,9 @@ export const AllTickets = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await updateTicket({ ticketId, status: newStatus }).unwrap();
-          console.log(res);
           Swal.fire("Success!", `Ticket status updated to ${newStatus}.`, "success");
         } catch (error) {
-          console.error("Failed to update ticket status:", error);
-          Swal.fire("Something went wrong", "Please Try Again", "error");
+          Swal.fire("Error", "Failed to update ticket.", "error");
         }
       }
     });
@@ -88,7 +79,6 @@ export const AllTickets = () => {
           await deleteTicket(ticketId).unwrap();
           Swal.fire("Deleted!", "The ticket record has been deleted.", "success");
         } catch (error) {
-          console.error("Failed to delete ticket:", error);
           Swal.fire("Error!", "Something went wrong while deleting.", "error");
         }
       }
@@ -96,10 +86,10 @@ export const AllTickets = () => {
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full px-4 md:px-8 py-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div className="text-2xl font-bold text-purple-900">All Tickets</div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2">
             <FiFilter className="text-purple-600" />
             <span className="text-gray-700 font-medium">Filter by Status:</span>
@@ -107,7 +97,7 @@ export const AllTickets = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="select select-bordered w-full max-w-xs"
+            className="select select-bordered w-full md:max-w-xs"
           >
             <option value="All">All Statuses</option>
             <option value="Open">Open</option>
@@ -117,106 +107,78 @@ export const AllTickets = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-gray-100 p-6 rounded-lg shadow-md">
-        <table className="table w-full text-left">
+      <div className="overflow-x-auto bg-gray-100 p-4 md:p-6 rounded-lg shadow-md">
+        <table className="table w-full text-sm md:text-base">
           <thead>
             <tr>
-              <th className="p-4 text-purple-600">Ticket ID</th>
-              <th className="p-4 text-purple-600">Subject</th>
-              <th className="p-4 text-purple-600">Description</th>
-              <th className="p-4 text-purple-600">Status</th>
-              <th className="p-4 text-purple-600">Created By</th>
-              <th className="p-4 text-purple-600">Created At</th>
-              <th className="p-4 text-purple-600">Last Updated</th>
-              <th className="p-4 text-purple-600">Actions</th>
+              <th className="p-2 md:p-4 text-purple-600">ID</th>
+              <th className="p-2 md:p-4 text-purple-600">Subject</th>
+              <th className="p-2 md:p-4 text-purple-600">Description</th>
+              <th className="p-2 md:p-4 text-purple-600">Status</th>
+              <th className="p-2 md:p-4 text-purple-600">Created By</th>
+              <th className="p-2 md:p-4 text-purple-600">Created At</th>
+              <th className="p-2 md:p-4 text-purple-600">Updated</th>
+              <th className="p-2 md:p-4 text-purple-600">Actions</th>
             </tr>
           </thead>
           <tbody>
             {error ? (
               <tr>
-                <td colSpan={8} className="text-red-600 text-center py-4 text-lg">
-                  Error fetching tickets. Please try again.
+                <td colSpan={8} className="text-red-600 text-center py-4">
+                  Error fetching tickets.
                 </td>
               </tr>
             ) : isLoading ? (
               <tr>
                 <td colSpan={8} className="flex justify-center items-center py-8">
-                  <PuffLoader color="#0aff13" size={60} />
+                  <PuffLoader color="#0aff13" size={50} />
                   <span className="ml-4 text-gray-700">Loading tickets...</span>
                 </td>
               </tr>
             ) : filteredTickets.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center text-gray-600 py-8 text-lg">
+                <td colSpan={8} className="text-center text-gray-600 py-8">
                   No {statusFilter === "All" ? "" : statusFilter} tickets available
                 </td>
               </tr>
             ) : (
               filteredTickets.map((ticket: TicketDetails) => (
-                <tr
-                  key={ticket.ticketId}
-                  className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
-                >
-                  <th className="p-4 text-gray-700">{ticket.ticketId}</th>
-                  <td className="p-4 font-bold text-purple-700">
-                    {ticket.subject}
+                <tr key={ticket.ticketId} className="hover:bg-gray-50">
+                  <td className="p-2 md:p-4 text-gray-700">{ticket.ticketId}</td>
+                  <td className="p-2 md:p-4 font-semibold text-purple-700">{ticket.subject}</td>
+                  <td className="p-2 md:p-4 text-gray-700">{ticket.description}</td>
+                  <td className="p-2 md:p-4">
+                    <span className={`badge ${getTicketStatusBadge(ticket.status)}`}>{ticket.status}</span>
                   </td>
-                  <td className="p-4 text-gray-700">{ticket.description}</td>
-                  <td className="p-4">
-                    <div
-                      className={`badge text-xs font-semibold px-3 py-1 rounded-full ${getTicketStatusBadge(
-                        ticket.status
-                      )} `}
-                    >
-                      {ticket.status}
-                    </div>
-                  </td>
-                  <td className="p-4">
+                  <td className="p-2 md:p-4">
                     <div className="font-bold text-gray-800">
                       {ticket.user.firstName} {ticket.user.lastName}
                     </div>
-                    <div className="text-sm opacity-50 text-gray-600">
-                      {ticket.user.email}
-                    </div>
+                    <div className="text-xs text-gray-500">{ticket.user.email}</div>
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-2 md:p-4 text-gray-700">
                     {new Date(ticket.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-2 md:p-4 text-gray-700">
                     {new Date(ticket.updatedAt).toLocaleDateString()}
                   </td>
-                  <td className="p-4">
-                    {ticket.status !== "Closed" && (
-                      <button
-                        className="text-blue-700 hover:text-blue-500 btn btn-sm btn-outline border-blue-500 transition-colors duration-200"
-                        onClick={() =>
-                          handleUpdateTicketStatus(ticket.ticketId, ticket.status)
-                        }
-                        title="Close Ticket"
-                        aria-label="Close Ticket"
-                      >
-                        <FiEdit /> Close Ticket
-                      </button>
-                    )}
-                    {ticket.status === "Closed" && (
-                      <button
-                        className="text-green-700 hover:text-green-500 btn btn-sm btn-outline border-green-500 transition-colors duration-200"
-                        onClick={() =>
-                          handleUpdateTicketStatus(ticket.ticketId, ticket.status)
-                        }
-                        title="Re-open Ticket"
-                        aria-label="Re-open Ticket"
-                      >
-                        <FiEdit /> Re-open Ticket
-                      </button>
-                    )}
+                  <td className="p-2 md:p-4 space-y-2 md:space-y-0 md:space-x-2 flex flex-col md:flex-row">
                     <button
-                      className="text-red-500 hover:text-red-600 btn btn-sm ml-2 btn-outline border-red-500 transition-colors duration-200"
-                      onClick={() => handleDeleteTicket(ticket.ticketId)}
-                      title="Delete Ticket"
-                      aria-label="Delete Ticket"
+                      onClick={() => handleUpdateTicketStatus(ticket.ticketId, ticket.status)}
+                      className={`btn btn-sm btn-outline transition duration-200 ${
+                        ticket.status === "Closed"
+                          ? "text-green-700 border-green-500 hover:text-green-500"
+                          : "text-blue-700 border-blue-500 hover:text-blue-500"
+                      }`}
                     >
-                      <AiFillDelete /> Delete
+                      <FiEdit className="inline-block mr-1" />
+                      {ticket.status === "Closed" ? "Re-open" : "Close"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTicket(ticket.ticketId)}
+                      className="btn btn-sm btn-outline text-red-500 border-red-500 hover:text-red-600"
+                    >
+                      <AiFillDelete className="inline-block mr-1" /> Delete
                     </button>
                   </td>
                 </tr>
@@ -225,6 +187,6 @@ export const AllTickets = () => {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 };

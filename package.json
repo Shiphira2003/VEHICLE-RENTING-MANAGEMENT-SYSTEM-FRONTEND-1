@@ -12,9 +12,11 @@
   "dependencies": {
     "@cloudinary/react": "^1.14.3",
     "@cloudinary/url-gen": "^1.21.0",
+    "@headlessui/react": "^2.2.6",
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
+    "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "daisyui": "^5.0.46",
     "date-fns": "^4.1.0",
@@ -38,6 +40,7 @@
     "sonner": "^2.0.6",
     "sooner": "^1.1.4",
     "sweetalert2": "^11.22.2",
+    "tailwind-variants": "^2.0.1",
     "tailwindcss": "^4.1.11",
     "xlsx": "^0.18.5"
   },

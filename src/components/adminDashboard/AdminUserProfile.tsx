@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaCamera, FaEdit, FaTimes } from 'react-icons/fa';
 import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { SaveIcon } from 'lucide-react';
 import type { RootState } from '../../apps/store';
@@ -18,7 +19,8 @@ interface FormValues {
 }
 
 const AdminUserProfile = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
+  const { user, isAuthenticated, role } = useSelector((state: RootState) => state.auth);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({
     defaultValues: {
@@ -60,15 +62,14 @@ const AdminUserProfile = () => {
         return;
       }
 
-      await updateProfile({ userId, ...data }).unwrap();
+      const { password, ...patch } = data;
+
+      await updateProfile({ userId, ...patch }).unwrap();
       Swal.fire('Success!', 'Profile updated successfully!', 'success');
       handleModalToggle();
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Failed to update profile:', error);
-      const errorMessage = error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
-        ? String(error.data.message)
-        : 'Failed to update profile. Please try again.';
-      Swal.fire('Error!', errorMessage, 'error');
+      Swal.fire('Error!', error?.data?.message || 'Failed to update profile. Please try again.', 'error');
     }
   };
 
@@ -96,12 +97,9 @@ const AdminUserProfile = () => {
         await updateProfileImage({ userId: userId, profileUrl: temporaryProfileUrl }).unwrap();
 
         Swal.fire('Success!', 'Profile image updated successfully!', 'success');
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.error('Failed to update profile image:', error);
-        const errorMessage = error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
-          ? String(error.data.message)
-          : 'Failed to upload image. Please try again.';
-        Swal.fire('Error!', errorMessage, 'error');
+        Swal.fire('Error!', error?.data?.message || 'Failed to upload image. Please try again.', 'error');
       }
     }
   };

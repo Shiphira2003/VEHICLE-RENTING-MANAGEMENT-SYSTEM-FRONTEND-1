@@ -112,6 +112,7 @@ export const VDetails = () => {
       };
 
       const res = await createBooking(bookingPayload).unwrap();
+      console.log(res);
       toast.success('Booking successful! Proceed to payment...', { id: loadingToastId });
 
       setNewBookingId(res.bookingId);

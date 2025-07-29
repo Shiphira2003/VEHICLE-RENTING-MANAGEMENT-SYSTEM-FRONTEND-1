@@ -1,123 +1,84 @@
+// src/features/api/vehicleApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type {
-  Vehicle,
-  VehicleSpec,
-  CreateVehiclePayload,
-  UpdateVehiclePayload
-} from '../../types/vehicleDetails';
+import type { Vehicle, CreateVehiclePayload, UpdateVehiclePayload } from '../../types/vehicleDetails';
 import { apiDomain } from '../../proxxy';
 
-const BASE_URL = apiDomain; 
-
 export const vehicleApi = createApi({
-  reducerPath: 'vehiclesApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: BASE_URL,
-    prepareHeaders: (headers) => {
-      // Add authorization header if needed
-      const token = localStorage.getItem('token');
+  reducerPath: 'vehicleApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: apiDomain,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as any).auth.token; 
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set('authorization', `Bearer ${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ['Vehicle'],
+  tagTypes: ['Vehicle'], 
   endpoints: (builder) => ({
     // Get all vehicles
     getAllVehicles: builder.query<Vehicle[], void>({
-      query: () => '/vehicles',
+      query: () => 'vehicles', 
       providesTags: (result) =>
         result
-          ? [
-              ...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })),
-              { type: 'Vehicle', id: 'LIST' },
-            ]
-          : [{ type: 'Vehicle', id: 'LIST' }],
+          ? [...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })), 'Vehicle']
+          : ['Vehicle'],
     }),
 
-    // Get filtered vehicles
-    getFilteredVehicles: builder.query<Vehicle[], {
+    // Get filtered vehicles (new endpoint)
+    getFilteredVehicles: builder.query<Vehicle[], { 
       manufacturer?: string;
       maxDailyPrice?: number;
-      sort?: 'dailyRateAsc' | 'dailyRateDesc';
+      sort?: 'dailyRateAsc' | 'dailyRateDesc' | 'yearAsc' | 'yearDesc';
     }>({
-      query: (params) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.manufacturer) {
-          queryParams.append('manufacturer', params.manufacturer);
-        }
-        
-        if (params.maxDailyPrice) {
-          queryParams.append('maxDailyPrice', params.maxDailyPrice.toString());
-        }
-        
-        if (params.sort) {
-          queryParams.append('sort', params.sort);
-        }
-        
-        return {
-          url: `vehicles/filter?${queryParams.toString()}`,
-          method: 'GET'
-        };
-      },
+      query: (params) => ({
+        url: 'vehicles/filter',
+        params: {
+          ...(params.manufacturer && { manufacturer: params.manufacturer }),
+          ...(params.maxDailyPrice && { maxDailyPrice: params.maxDailyPrice }),
+          ...(params.sort && { sort: params.sort }),
+        },
+      }),
       providesTags: (result) =>
         result
-          ? [
-              ...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })),
-              { type: 'Vehicle', id: 'FILTERED_LIST' },
-            ]
-          : [{ type: 'Vehicle', id: 'FILTERED_LIST' }],
+          ? [...result.map(({ vehicleId }) => ({ type: 'Vehicle' as const, id: vehicleId })), 'Vehicle']
+          : ['Vehicle'],
     }),
 
-    // Get vehicle by ID
+    // Get single vehicle by ID
     getVehicleById: builder.query<Vehicle, number>({
-      query: (id) => `/vehicles/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'Vehicle', id }],
+      query: (id) => `vehicles/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Vehicle', id }],
     }),
 
-    // Create a new vehicle
-    createVehicle: builder.mutation<Vehicle, CreateVehiclePayload>({
-      query: (body) => ({
-        url: '/vehicles',
-        method: 'POST',
-        body,
+    // Create new vehicle
+    createVehicle: builder.mutation<string, CreateVehiclePayload>({ 
+      query: (newVehicle) => ({
+        url: 'vehicles',
+        method: 'POST', 
+        body: newVehicle,
       }),
-      invalidatesTags: [{ type: 'Vehicle', id: 'LIST' }],
+      invalidatesTags: ['Vehicle'], 
     }),
 
-    // Update a vehicle
-    updateVehicle: builder.mutation<Vehicle, { id: number; body: UpdateVehiclePayload }>({
-      query: ({ id, body }) => ({
-        url: `/vehicles/${id}`,
-        method: 'PUT',
-        body,
+    // Update existing vehicle
+    updateVehicle: builder.mutation<string, { id: number; data: UpdateVehiclePayload }>({ 
+      query: ({ id, data }) => ({
+        url: `vehicles/${id}`,
+        method: 'PUT', 
+        body: data,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Vehicle', id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Vehicle', id }], 
     }),
 
-    // Delete a vehicle
-    deleteVehicle: builder.mutation<void, number>({
+    // Delete vehicle
+    deleteVehicle: builder.mutation<string, number>({
       query: (id) => ({
-        url: `/vehicles/${id}`,
-        method: 'DELETE',
+        url: `vehicles/${id}`,
+        method: 'DELETE', 
       }),
-      invalidatesTags: (_result, _error, id) => [{ type: 'Vehicle', id }],
-    }),
-
-    // Get all vehicle specifications (for admin panel)
-    getAllVehicleSpecs: builder.query<VehicleSpec[], void>({
-      query: () => '/vehicle-specs',
-    }),
-
-    // Create a new vehicle specification
-    createVehicleSpec: builder.mutation<VehicleSpec, Omit<VehicleSpec, 'vehicleSpecId'>>({
-      query: (body) => ({
-        url: '/vehicle-specs',
-        method: 'POST',
-        body,
-      }),
+      invalidatesTags: ['Vehicle'], // Fixed typo (was 'invalidatesTags')
     }),
   }),
 });
@@ -125,12 +86,9 @@ export const vehicleApi = createApi({
 // Export hooks for usage in components
 export const {
   useGetAllVehiclesQuery,
-  useLazyGetFilteredVehiclesQuery,
+  useLazyGetFilteredVehiclesQuery, // Added this export
   useGetVehicleByIdQuery,
   useCreateVehicleMutation,
   useUpdateVehicleMutation,
   useDeleteVehicleMutation,
-  useGetAllVehicleSpecsQuery,
-  useCreateVehicleSpecMutation,
 } = vehicleApi;
-export default vehicleApi

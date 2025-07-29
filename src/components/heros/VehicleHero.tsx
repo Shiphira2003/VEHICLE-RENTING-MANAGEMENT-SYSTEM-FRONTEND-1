@@ -7,12 +7,28 @@ import {
 } from '../../features/api/vehiclesApi';
 import { Toaster, toast } from 'sonner';
 
+interface Vehicle {
+  vehicleId: string;
+  imageUrl: string;
+  rentalRate: number;
+  color?: string;
+  availability: boolean;
+  vehicleSpec: {
+    manufacturer: string;
+    model: string;
+    year: number;
+    seatingCapacity: number;
+    fuelType: string;
+    transmission: string;
+  };
+}
+
 export const VehiclesListing = () => {
   // State for filters and search
   const [filters, setFilters] = useState({
     manufacturer: '',
     maxDailyPrice: 1000,
-    sort: 'dailyRateAsc',
+    sort: 'dailyRateAsc' as 'dailyRateAsc' | 'dailyRateDesc' | 'yearAsc' | 'yearDesc',
     searchQuery: ''
   });
 
@@ -28,15 +44,14 @@ export const VehiclesListing = () => {
     isFetching: isFilterFetching 
   }] = useLazyGetFilteredVehiclesQuery();
 
-  // Get unique manufacturers for filter dropdown
-  const manufacturers = Array.from(
-    new Set(allVehicles?.map(v => v.vehicleSpec.manufacturer) || [])
-  ).sort();
+  // Get unique manufacturers for filter dropdown - fixed type inference
+  const manufacturers: string[] = allVehicles 
+    ? Array.from(new Set(allVehicles.map(v => v.vehicleSpec.manufacturer))).sort() 
+    : [];
 
   // Apply filters handler
   const applyFilters = () => {
     if (filters.searchQuery) {
-      // Client-side search when search query is present
       toast.info('Showing search results');
       setCurrentPage(1);
       return;
@@ -45,7 +60,7 @@ export const VehiclesListing = () => {
     triggerFilter({
       manufacturer: filters.manufacturer || undefined,
       maxDailyPrice: filters.maxDailyPrice,
-      sort: filters.sort as 'dailyRateAsc' | 'dailyRateDesc'
+      sort: filters.sort
     });
     setCurrentPage(1); 
   };
@@ -163,7 +178,7 @@ export const VehiclesListing = () => {
           </div>
 
           <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {/* Manufacturer Filter */}
+            {/* Manufacturer Filter - Fixed type issues */}
             <div className="w-full">
               <label htmlFor="manufacturer" className="block text-gray-700 text-xs sm:text-sm font-semibold mb-1 sm:mb-2">
                 Manufacturer
@@ -175,7 +190,7 @@ export const VehiclesListing = () => {
                 onChange={handleFilterChange}
               >
                 <option value="">All Manufacturers</option>
-                {manufacturers.map(manufacturer => (
+                {manufacturers.map((manufacturer: string) => (
                   <option key={manufacturer} value={manufacturer}>
                     {manufacturer}
                   </option>

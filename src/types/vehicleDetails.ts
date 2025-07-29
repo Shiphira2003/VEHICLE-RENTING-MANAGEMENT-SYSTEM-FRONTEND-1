@@ -1,7 +1,7 @@
-
+// src/types/vehicleDetails.ts
 
 export type FuelType = "Petrol" | "Diesel" | "Electric" | "Hybrid";
-export type TransmissionType = 'Automatic' | 'Manual';
+export type TransmissionType = 'Automatic' | 'Manual'; // Added this type
 
 export interface VehicleSpec {
   vehicleSpecId: number;
@@ -12,7 +12,7 @@ export interface VehicleSpec {
   engineCapacity: string;
   seatingCapacity: number;
   features: string;
-  transmission: TransmissionType; 
+  transmission: TransmissionType; // <<< ADD THIS LINE
 }
 
 export interface Vehicle {

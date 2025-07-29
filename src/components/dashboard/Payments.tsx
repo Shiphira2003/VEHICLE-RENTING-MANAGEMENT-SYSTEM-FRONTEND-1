@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../apps/store';
@@ -13,8 +12,15 @@ export const UserPayments = () => {
 
     const userPayments = React.useMemo(() => {
         if (!allPayments || !userId) return [];
-        // FIX: Ensure payment.booking exists and then check userId
-        return allPayments.filter((payment: PaymentDetails) => payment.booking && payment.booking.user && payment.booking.user.userId === userId);
+        return allPayments.filter((payment: PaymentDetails) => 
+            payment.booking && 
+            payment.booking.user && 
+            payment.booking.user.userId === userId
+        ).map(payment => ({
+            ...payment,
+            // Ensure amount is always a number and safe for toFixed()
+            amount: typeof payment.amount === 'number' ? payment.amount : Number(payment.amount) || 0
+        }));
     }, [allPayments, userId]);
 
     if (!userId) {
@@ -22,18 +28,18 @@ export const UserPayments = () => {
     }
 
     if (isLoading) return <div className="text-center py-10 text-white">Loading your payments...</div>;
+    
     if (isError) {
         let errorMessage = "Failed to fetch payments.";
         if (error) {
-            // Improved error message extraction from RTK Query error object
             if ('data' in error && error.data && typeof error.data === 'object' && 'error' in error.data) {
                 errorMessage = (error.data as any).error || (error.data as any).message || 'Unknown backend error';
             } else if ('error' in error && typeof error.error === 'string') {
-                errorMessage = error.error; // RTK Query error string, e.g., "Fetch failed"
+                errorMessage = error.error;
             } else if ('message' in error && typeof error.message === 'string') {
-                errorMessage = error.message; // Generic JavaScript Error message
+                errorMessage = error.message;
             } else if (typeof error === 'string') {
-                errorMessage = error; // Direct string error
+                errorMessage = error;
             }
         }
 
@@ -44,13 +50,16 @@ export const UserPayments = () => {
         });
         return <div className="text-center py-10 text-red-500">Error loading payments.</div>;
     }
-    if (!userPayments || userPayments.length === 0) return <div className="text-center py-10 text-purple-400">You have no payments yet.</div>;
+
+    if (!userPayments || userPayments.length === 0) {
+        return <div className="text-center py-10 text-purple-400">You have no payments yet.</div>;
+    }
 
     return (
-        <div className="min-h-screen bg-darkGray text-white p-6">
+        <div className="min-h-screen p-6">
             <h2 className="text-3xl font-bold text-center mb-8 text-accentPink">My Payments</h2>
             <div className="overflow-x-auto">
-                <table className="table w-full bg-lightGray rounded-lg shadow-md">
+                <table className="table w-full rounded-lg shadow-md">
                     <thead>
                         <tr className="bg-gray-300 text-white">
                             <th className="p-4 text-left">Payment ID</th>

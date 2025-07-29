@@ -105,3 +105,4 @@ export const {
     useUpdateVehicleSpecMutation,
     useDeleteVehicleSpecMutation,
 } = vehicleSpecsApi;
+export const { reducerPath, middleware } = vehicleSpecsApi;
